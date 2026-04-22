@@ -62,6 +62,12 @@ After you finish, write `BENCH_LOG.json` in the project root with this exact sha
   "totalLoc": 123,
   "bootCommand": "npm run dev",
   "manualTriggerCommand": "the exact command or UI action to invoke the workflow now",
+  "mode": "installation-included | flow-only",
+  "timing": {
+    "installMinutes": 12,
+    "buildMinutes": 23,
+    "executionMinutes": 2
+  },
   "infra": {
     "services": ["list of local processes/containers"],
     "externalDeps": ["Postgres", "Redis", "none", ...]

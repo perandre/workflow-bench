@@ -11,7 +11,7 @@ When the user says any trigger phrase ("start the bench", "run it", "go", "start
 ### Q1 — Which platforms?
 
 Ask:
-> "Which platforms do you want to benchmark? Options: **inngest**, **mastra**, **hatchet**, **restate**. You can pick all four or any subset — just list them. (Press Enter to use all four.)"
+> "Which platforms do you want to benchmark? Options: **inngest**, **mastra**, **hatchet**, **restate**, **windmill**. You can pick any subset — just list them. (Press Enter to use all.)"
 
 After the user answers, overwrite `~/Sites/workflow-bench/platforms.json` with a JSON array of the selected slugs in the order they want to run them.
 
@@ -43,6 +43,21 @@ No mocks, no stubs — real APIs only.
 ```
 
 If the user's description is thin on success criteria, prompt once: "What should we check at the end to confirm it worked?" Then save the answer.
+
+### Q3 — Mode?
+
+Ask:
+> "Which mode?
+>
+> **Installation included** — start the clock from zero: pull Docker images, install packages, configure the service, build the flow, run it. Use this the first time you test a platform.
+>
+> **Flow only** — the platform software is already installed and configured on this machine. Start the clock at 'build the flow'. Use this to retest a platform you've already set up."
+
+Record the answer in `services/<P>/mode.txt` as either `installation-included` or `flow-only` for each platform. This affects what the timer covers and what gets recorded in `COMPARISON.md`.
+
+**Timer rules:**
+- **Installation included**: `date +%s > .bench-start-ts` before any install/pull step. Record three split times in `BENCH_LOG.json`: `installMinutes` (install done → ready to write code), `buildMinutes` (first line of code → first green run), `executionMinutes` (trigger → confirmed output).
+- **Flow only**: `date +%s > .bench-start-ts` before writing the first line of flow code. Record `buildMinutes` and `executionMinutes` only. Set `installMinutes` to `null`.
 
 ### Skip the interview if workflow.md is fresh
 
