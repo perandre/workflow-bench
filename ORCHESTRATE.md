@@ -73,6 +73,10 @@ Then begin the first platform immediately — no further questions.
 
 ---
 
+## Before starting any platform
+
+Read `~/Sites/workflow-bench/COMPARISON.md` — specifically the **Known gotchas** section. Prior bench runs have documented platform-specific traps that are not in official docs. Apply this knowledge before writing a single line of code for that platform.
+
 ## Ground truth files (read before acting)
 
 - `~/Sites/workflow-bench/BUILD_PROMPT.md` — what to build

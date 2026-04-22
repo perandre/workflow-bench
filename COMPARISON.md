@@ -39,4 +39,19 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 
 ---
 
+## Known gotchas
+
+Things not in the official docs that cost a failed run or forced a workaround. The agent reads this before building on a platform.
+
+| Platform | Gotcha |
+|---|---|
+| **Windmill** | Workers sandbox env vars — secrets must use `wmill.getVariable()`, not `process.env`. API endpoint paths differ from docs; fetch `/api/openapi.json` from the live instance to find correct routes. Cron uses 6-field syntax (seconds first): `0 0 8 * * *`. |
+| **Mastra** | Bundler runs code from a temp `src/mastra/public/` dir — `process.cwd()` and `__dirname` are unreliable. Use a `MASTRA_PROJECT_ROOT` env var for any file paths. Step-level retry is `retries: N`, not `retryConfig`. |
+| **Restate** | Ephemeral by default — run with a named volume or all journal state is lost on restart. No native cron; needs a `node-cron` sidecar. |
+| **Hatchet** | Token rotates on every server restart — re-copy from Docker logs and update `.env` each time. No idempotency primitive built in; must implement manually. |
+| **Inngest** | Skills may cover a newer API version than what npm serves — check the installed version before trusting skill examples (hit a `createFunction` 2-arg vs 3-arg mismatch). |
+| **Trigger.dev** | Default `npm run dev` requires a cloud credential even for the self-hosted path — must explicitly configure local server URL before anything runs. |
+
+---
+
 *Last updated: 2026-04-22. Timing figures are approximate from bench logs. — = not measured / blocked.*
