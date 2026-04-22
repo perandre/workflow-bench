@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { platformColor } from "@/lib/platform-colors"
 import type { ScoredPlatform } from "@/lib/types"
 
 function YesNo({ value }: { value: string }) {
@@ -7,16 +8,16 @@ function YesNo({ value }: { value: string }) {
   const isNo = lower.startsWith("n")
   return (
     <span className={cn(
-      "inline-flex items-center gap-1 text-xs font-medium",
+      "inline-flex items-center gap-1.5 text-sm font-medium",
       isYes && "text-success",
       isNo && "text-danger",
-      !isYes && !isNo && "text-white/40",
+      !isYes && !isNo && "text-white/70",
     )}>
       <span className={cn(
-        "inline-block w-1.5 h-1.5 rounded-full",
-        isYes && "bg-success",
-        isNo && "bg-danger",
-        !isYes && !isNo && "bg-white/20",
+        "inline-block w-2 h-2 rounded-full",
+        isYes && "bg-success shadow-[0_0_6px_oklch(0.72_0.15_150/0.6)]",
+        isNo && "bg-danger shadow-[0_0_6px_oklch(0.65_0.18_25/0.6)]",
+        !isYes && !isNo && "bg-white/30",
       )} />
       {value}
     </span>
@@ -25,22 +26,17 @@ function YesNo({ value }: { value: string }) {
 
 function ScoreBar({ value }: { value: string }) {
   const n = parseInt(value)
-  if (isNaN(n)) return <span className="text-white/40 text-xs">{value}</span>
-  const color = n >= 4 ? "bg-success" : n >= 3 ? "bg-warning" : "bg-danger"
+  if (isNaN(n)) return <span className="text-white/60 text-sm">{value}</span>
+  const pct = Math.max(0, Math.min(5, n)) / 5 * 100
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div
-            key={i}
-            className={cn(
-              "w-5 h-1 rounded-full transition-colors",
-              i <= n ? color : "bg-white/8"
-            )}
-          />
-        ))}
+    <div className="flex items-center gap-2.5">
+      <div className="relative h-2 w-20 rounded-full bg-white/[0.08] overflow-hidden">
+        <div
+          className="score-gradient absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
       </div>
-      <span className="text-xs text-white/35 tabular-nums">{n}/5</span>
+      <span className="text-sm text-white/75 tabular-nums font-medium">{n}/5</span>
     </div>
   )
 }
@@ -48,15 +44,15 @@ function ScoreBar({ value }: { value: string }) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4 py-1.5">
-      <span className="text-xs text-white/35 shrink-0">{label}</span>
-      <span className="text-xs text-white text-right">{children}</span>
+      <span className="text-xs text-white/65 shrink-0">{label}</span>
+      <span className="text-sm text-white text-right">{children}</span>
     </div>
   )
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-1 mt-4 first:mt-0">
+    <p className="text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 mt-5 first:mt-0">
       {children}
     </p>
   )
@@ -72,29 +68,81 @@ function computeScore(score: ScoredPlatform): number {
     score.dashboardQuality, score.parallelPrimitive, score.codeIdempotency, score.codeCleanness,
   ].reduce((sum, v) => sum + (parseInt(v) || 0), 0)
 
-  // 6 bool points (max 6) + 20 numeric points (max 20) → normalize to 100
   return Math.round(((boolPoints / 6) * 0.5 + (numericTotal / 20) * 0.5) * 100)
+}
+
+function ArcGauge({ value, color }: { value: number; color: string }) {
+  const pct = Math.max(0, Math.min(100, value))
+  const gradId = `arc-grad-${color.replace("#", "")}`
+  return (
+    <div className="relative w-full flex justify-center">
+      <svg viewBox="0 0 120 72" className="w-52 h-[120px]">
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="oklch(0.65 0.18 25)" />
+            <stop offset="50%" stopColor="oklch(0.78 0.15 75)" />
+            <stop offset="100%" stopColor="oklch(0.72 0.15 150)" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M 10 62 A 50 50 0 0 1 110 62"
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 10 62 A 50 50 0 0 1 110 62"
+          fill="none"
+          stroke={`url(#${gradId})`}
+          strokeWidth="8"
+          strokeLinecap="round"
+          pathLength={100}
+          strokeDasharray={`${pct} 100`}
+          style={{ transition: "stroke-dasharray 700ms ease-out" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-2 pointer-events-none">
+        <div className="text-4xl font-bold tabular-nums leading-none text-white">
+          {Math.round(pct)}
+        </div>
+        <div className="text-[10px] text-white/55 mt-1 uppercase tracking-widest font-semibold">
+          / 100
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function ScoreCard({ score }: { score: ScoredPlatform }) {
   const overall = computeScore(score)
-  const overallColor = overall >= 75 ? "text-success" : overall >= 50 ? "text-warning" : "text-danger"
+  const color = platformColor(score.platform)
 
   return (
-    <div className="rounded-xl border border-white/8 bg-[oklch(0.12_0.007_264)] p-5">
-      {/* Platform header */}
-      <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/6">
-        <h3 className="font-semibold text-white capitalize tracking-tight text-base">{score.platform}</h3>
-        <div className="text-right">
-          <div className={cn("text-2xl font-bold tabular-nums leading-none", overallColor)}>
-            {overall}
-          </div>
-          <div className="text-[10px] text-white/25 mt-0.5">/ 100</div>
-        </div>
+    <div
+      className="relative rounded-xl border border-white/12 bg-[oklch(0.13_0.007_264)] p-6"
+      style={{
+        borderTopWidth: "3px",
+        borderTopColor: color,
+        boxShadow: `0 0 40px -20px ${color}`,
+      }}
+    >
+      {/* Platform header + arc gauge */}
+      <div className="mb-4">
+        <h3
+          className="font-bold text-xl capitalize tracking-tight text-center mb-1"
+          style={{ color }}
+        >
+          {score.platform}
+        </h3>
       </div>
 
+      <ArcGauge value={overall} color={color} />
+
+      <div className="mt-6 mb-1 h-px bg-white/10" />
+
       <SectionLabel>Runtime</SectionLabel>
-      <div className="divide-y divide-white/4">
+      <div className="divide-y divide-white/[0.06]">
         <Row label="Booted first try"><YesNo value={score.bootedFirstTry} /></Row>
         <Row label="Trigger fired"><YesNo value={score.triggerFired} /></Row>
         <Row label="Success criteria"><YesNo value={score.successCriteriaMet} /></Row>
@@ -104,28 +152,28 @@ export function ScoreCard({ score }: { score: ScoredPlatform }) {
       </div>
 
       <SectionLabel>Code quality</SectionLabel>
-      <div className="divide-y divide-white/4">
+      <div className="divide-y divide-white/[0.06]">
         <Row label="Parallel primitive"><ScoreBar value={score.parallelPrimitive} /></Row>
         <Row label="Idempotency"><ScoreBar value={score.codeIdempotency} /></Row>
         <Row label="Cleanliness"><ScoreBar value={score.codeCleanness} /></Row>
       </div>
 
       <SectionLabel>Infrastructure</SectionLabel>
-      <div className="divide-y divide-white/4">
-        <Row label="Services"><span className="text-white/60">{score.infraServices}</span></Row>
-        <Row label="Deps"><span className="text-white/60">{score.externalDeps}</span></Row>
-        <Row label="RAM"><span className="text-white/60">{score.ram}</span></Row>
+      <div className="divide-y divide-white/[0.06]">
+        <Row label="Services"><span className="text-white/80">{score.infraServices}</span></Row>
+        <Row label="Deps"><span className="text-white/80">{score.externalDeps}</span></Row>
+        <Row label="RAM"><span className="text-white/80">{score.ram}</span></Row>
         <Row label="Self-hostable"><YesNo value={score.selfHostable} /></Row>
-        <Row label="License"><span className="text-white/60">{score.license}</span></Row>
+        <Row label="License"><span className="text-white/80">{score.license}</span></Row>
       </div>
 
       {score.notes.length > 0 && (
         <>
           <SectionLabel>Notes</SectionLabel>
-          <ul className="space-y-1.5">
+          <ul className="space-y-2">
             {score.notes.map((n, i) => (
-              <li key={i} className="text-xs text-white/40 leading-relaxed flex gap-2">
-                <span className="text-white/20 shrink-0 mt-0.5">·</span>
+              <li key={i} className="text-sm text-white/70 leading-relaxed flex gap-2">
+                <span className="text-white/35 shrink-0 mt-0.5">·</span>
                 {n}
               </li>
             ))}

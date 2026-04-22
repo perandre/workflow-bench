@@ -4,6 +4,7 @@ import { StepChecklist } from "@/components/StepChecklist"
 import { LogStream } from "@/components/LogStream"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { platformColor } from "@/lib/platform-colors"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import type { PlatformState } from "@/lib/store"
 import type { StepName } from "@/lib/types"
@@ -11,38 +12,43 @@ import type { StepName } from "@/lib/types"
 const STATUS_CONFIG: Record<PlatformState["status"], {
   label: string
   variant: "pending" | "running" | "success" | "error"
-  borderClass: string
-  bgClass: string
 }> = {
-  pending: { label: "Waiting", variant: "pending", borderClass: "border-white/8", bgClass: "" },
-  running: { label: "Running", variant: "running", borderClass: "border-running/25", bgClass: "bg-running/[0.03]" },
-  complete: { label: "Done", variant: "success", borderClass: "border-success/20", bgClass: "bg-success/[0.02]" },
-  error: { label: "Error", variant: "error", borderClass: "border-danger/20", bgClass: "bg-danger/[0.02]" },
+  pending: { label: "Waiting", variant: "pending" },
+  running: { label: "Running", variant: "running" },
+  complete: { label: "Done", variant: "success" },
+  error: { label: "Error", variant: "error" },
 }
 
 const STATUS_DOT: Record<PlatformState["status"], string> = {
-  pending: "bg-white/15",
-  running: "bg-running animate-pulse",
-  complete: "bg-success",
-  error: "bg-danger",
+  pending: "bg-white/25",
+  running: "bg-running animate-pulse shadow-[0_0_12px_2px_oklch(0.72_0.15_230/0.55)]",
+  complete: "bg-success shadow-[0_0_10px_2px_oklch(0.72_0.15_150/0.5)]",
+  error: "bg-danger shadow-[0_0_10px_2px_oklch(0.65_0.18_25/0.5)]",
 }
 
 export function PlatformCard({ name, state }: { name: string; state: PlatformState }) {
   const [showLogs, setShowLogs] = useState(false)
   const cfg = STATUS_CONFIG[state.status]
+  const color = platformColor(name)
 
   return (
-    <div className={cn(
-      "rounded-xl border p-5 transition-all duration-300",
-      "bg-[oklch(0.12_0.007_264)]",
-      cfg.borderClass,
-      cfg.bgClass,
-    )}>
+    <div
+      className="relative rounded-xl border border-white/12 bg-[oklch(0.13_0.007_264)] p-6 transition-all duration-300"
+      style={{
+        borderLeftWidth: "3px",
+        borderLeftColor: color,
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div className={cn("w-2 h-2 rounded-full shrink-0", STATUS_DOT[state.status])} />
-          <h3 className="font-semibold text-white capitalize tracking-tight">{name}</h3>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <div className={cn("w-3 h-3 rounded-full shrink-0", STATUS_DOT[state.status])} />
+          <h3
+            className="font-bold text-lg capitalize tracking-tight"
+            style={{ color }}
+          >
+            {name}
+          </h3>
         </div>
         <Badge variant={cfg.variant as "pending" | "running" | "error" | "default"}>{cfg.label}</Badge>
       </div>
@@ -53,22 +59,26 @@ export function PlatformCard({ name, state }: { name: string; state: PlatformSta
       {/* Log toggle */}
       <button
         onClick={() => setShowLogs(v => !v)}
-        className="mt-4 flex items-center gap-1.5 text-xs text-white/25 hover:text-white/50 transition-colors"
+        className="mt-5 flex items-center gap-1.5 text-xs text-white/50 hover:text-white/85 transition-colors font-medium"
       >
         {showLogs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         {showLogs ? "Hide" : "Show"} logs
-        <span className="text-white/15">({state.logs.length})</span>
+        <span className="text-white/30">({state.logs.length})</span>
       </button>
 
       {showLogs && (
-        <div className="mt-2.5 rounded-lg overflow-hidden border border-white/5 bg-black/40">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/5">
+        <div className="mt-3 rounded-lg overflow-hidden border border-white/10 bg-black">
+          <div
+            className="h-[3px] w-full"
+            style={{ backgroundColor: color }}
+          />
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/8">
             <div className="flex gap-1">
-              <div className="w-2 h-2 rounded-full bg-white/10" />
-              <div className="w-2 h-2 rounded-full bg-white/10" />
-              <div className="w-2 h-2 rounded-full bg-white/10" />
+              <div className="w-2 h-2 rounded-full bg-white/15" />
+              <div className="w-2 h-2 rounded-full bg-white/15" />
+              <div className="w-2 h-2 rounded-full bg-white/15" />
             </div>
-            <span className="text-xs text-white/20 font-mono">{name}</span>
+            <span className="text-xs text-white/50 font-mono">{name}</span>
           </div>
           <LogStream logs={state.logs} />
         </div>

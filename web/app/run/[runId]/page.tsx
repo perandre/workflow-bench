@@ -1,12 +1,14 @@
 "use client"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useBenchStore } from "@/lib/store"
 import { PlatformCard } from "@/components/PlatformCard"
 import { Button } from "@/components/ui/button"
-import { Gauge, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Link from "next/link"
-import type { BenchEvent } from "@/lib/types"
+import type { BenchEvent, StepName } from "@/lib/types"
+
+const STEP_KEYS: StepName[] = ["install", "docker_up", "triggered", "verified", "scored"]
 
 export default function RunPage() {
   const { runId } = useParams<{ runId: string }>()
@@ -37,24 +39,34 @@ export default function RunPage() {
 
   const platformList = platforms.length ? platforms : Object.keys(platformStates)
 
-  return (
-    <main className="min-h-screen px-6 py-12">
-      <div className="max-w-5xl mx-auto">
+  const { done, total, percent } = useMemo(() => {
+    const total = platformList.length * STEP_KEYS.length
+    let done = 0
+    for (const p of platformList) {
+      const s = platformStates[p]
+      if (!s) continue
+      for (const k of STEP_KEYS) {
+        if (s.steps[k] === "done") done++
+      }
+    }
+    return { done, total, percent: total ? Math.round((done / total) * 100) : 0 }
+  }, [platformList, platformStates])
 
-        {/* Header */}
-        <div className="flex items-start justify-between mb-10">
+  return (
+    <main className="min-h-screen px-6 py-14">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-start justify-between mb-8">
           <div>
-            <Link href="/" className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs mb-3 transition-colors">
-              <Gauge className="w-3.5 h-3.5" />
-              Workflow Bench
+            <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white/80 text-sm mb-4 transition-colors">
+              ← Workflow Bench
             </Link>
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="hero-gradient text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]">
               {runStatus === "running" ? "Benchmark running" : runStatus === "complete" ? "Benchmark complete" : "Run"}
             </h1>
-            <p className="text-xs text-white/25 mt-1 font-mono">{runId}</p>
+            <p className="text-sm text-white/50 mt-2 font-mono">{runId}</p>
           </div>
 
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex items-center gap-3 mt-2">
             {runStatus === "complete" && (
               <Button onClick={() => router.push(`/results/${runId}`)}>
                 View results
@@ -62,21 +74,39 @@ export default function RunPage() {
               </Button>
             )}
             {runStatus === "error" && (
-              <span className="text-danger text-sm bg-danger/8 border border-danger/20 rounded-lg px-3 py-1.5">
+              <span className="text-danger text-sm bg-danger/10 border border-danger/25 rounded-lg px-3.5 py-2">
                 Run failed
               </span>
             )}
             {runStatus === "running" && (
-              <div className="flex items-center gap-2 text-sm text-white/40">
-                <div className="w-1.5 h-1.5 rounded-full bg-running animate-pulse" />
+              <div className="flex items-center gap-2 text-sm text-white/65">
+                <div className="w-2 h-2 rounded-full bg-running animate-pulse" />
                 Running…
               </div>
             )}
           </div>
         </div>
 
+        {/* Overall progress bar */}
+        <div className="mb-10">
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              Overall progress
+            </span>
+            <span className="text-sm text-white/80 tabular-nums font-mono">
+              {done} / {total} <span className="text-white/40">· {percent}%</span>
+            </span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-white/[0.06] overflow-hidden border border-white/10">
+            <div
+              className="h-full rounded-full cta-gradient transition-all duration-500 ease-out"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+        </div>
+
         {/* Platform grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {platformList.map(p => (
             <PlatformCard
               key={p}
