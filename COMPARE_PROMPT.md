@@ -13,18 +13,18 @@ Also read `~/Sites/workflow-bench/workflow.md` — the recommendation should be 
 ## Your job
 
 1. Read all rubrics and each platform's `BENCH_LOG.json` (for timing and mode).
-2. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git. For each newly benchmarked platform:
+2. **Calculate weighted scores**: DX 40%, Reliability 30%, Operational 20%, Cost 10%. Each platform gets a final score out of 100.
+3. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git. For each newly benchmarked platform:
    - Add or update its column
-   - Fill the **Mode** row (`Installation included` or `Flow only`)
-   - Fill the three timing rows from `BENCH_LOG.json` → `timing` (`installMinutes`, `buildMinutes`, `executionMinutes`). Write `—` if the mode means a timer doesn't apply (e.g. `installMinutes` is null for Flow only runs)
-   - Score each of the 7 dimensions
+   - Fill the **Mode** row, timing rows, and weighted score (0-100)
    - Do not remove or overwrite existing platform columns
-3. Produce `~/Sites/workflow-bench/summary.md` (gitignored) with the full narrative:
-   - **Side-by-side table** — one column per platform, rows = rubric fields.
-   - **Ranked recommendation** framed around the tested workflow — which platform handles this kind of workload best, and why?
-   - **Surprises** — anything a platform did noticeably better or worse than its earlier positioning predicted.
-   - **Agent-tooling signal** — did platforms with richer agent tooling (MCP/skills) produce measurably better code, or did all converge? One paragraph.
-   - **Variance caveat** — if the user ran any platform twice, note divergence between runs.
+4. Produce `~/Sites/workflow-bench/summary.md` (gitignored) with the full narrative:
+   - **Weighted scoring table** — platform vs (DX%, Reliability%, Operational%, Cost%, **Total/100**)
+   - **Clear recommendation** (for 40+ dev team) — one paragraph naming the winner and why. Focus on: *Can the team be productive? Will this scale? Is it a joy or a drag?*
+   - **Trade-offs for runners-up** — one bullet per runner-up explaining what you gain/lose (e.g., "Hatchet: trade DX for observability visibility").
+   - **Workflow-specific insights** — what did THIS workflow expose about each platform? (e.g., "ArXiv-to-Slack is simple enough that all platforms succeeded—DX differences are the real signal.")
+   - **Surprises** — anything a platform did noticeably better or worse than expected.
+   - **Agent-tooling signal** — did platforms with richer agent tooling (MCP/skills) produce measurably better code? One paragraph.
 
 ## Anti-bias guardrails
 

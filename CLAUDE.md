@@ -2,11 +2,28 @@
 
 This directory is a **benchmark harness** for comparing code-first durable-workflow platforms: Inngest, Mastra, Hatchet, Restate.
 
+**Goal**: Find the best workflow platform for a 40+ developer team that prioritizes DX, reliability, and operational simplicity.
+
 ## Start here
 
-If the user says anything like "start the bench", "run it", "go", "start with Inngest", or otherwise signals they want the benchmark to begin: **read `ORCHESTRATE.md` first, then execute it**. Do not improvise.
+If the user says anything like "start the bench", "run it", "go", or suggests a workflow: **propose workflow enhancements first**. When they have a workflow in mind, you should:
 
-`ORCHESTRATE.md` begins with an interview phase — use `AskUserQuestion` to ask the user which platforms, which workflow, and which mode before doing anything else.
+1. **Suggest improvements** to make it more revealing of platform differences (e.g., add error paths, parallel steps, checkpoints—whatever exposes real-world friction).
+2. **Know what good looks like**: Identify upfront what metrics matter for THIS workflow (e.g., error recovery speed, parallel efficiency, observability).
+3. **Skip interview**: No team profiling needed (40+ devs, always the same constraints).
+4. Then read `ORCHESTRATE.md` and execute—choose platforms and mode directly.
+
+## Workflow enhancement protocol
+
+When a user proposes a workflow, before benchmarking:
+
+1. **Suggest enhancements** that make it more revealing (error paths, parallelism, checkpoints, real-world friction).
+2. **Define "good results"** upfront: What metrics/behaviors should we measure? (e.g., error recovery latency, parallel efficiency, observability). This guides the scoring rubric.
+3. **Keep it real**: Don't over-engineer. A 40+ dev team needs practical, not academic, tests.
+
+Example: User says "fetch arXiv paper, post to Slack."
+- **Enhancement**: Add a failure path: "if Slack post fails after 3 retries, post to a fallback email." → Tests error handling and retry strategy.
+- **Good results**: Sub-second execution, clear error logs, idempotency (same paper shouldn't post twice in one day).
 
 ## Repo structure
 

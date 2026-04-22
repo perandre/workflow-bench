@@ -18,7 +18,9 @@ Send a second trigger with the same logical key (same UTC date). Check whether a
 
 ## 5 — Write scoring.md
 
-Keep answers to one line per field. Save to `services/[TOOL]/scoring.md`:
+**Weighted scoring for 40+ dev team**: DX 40%, Reliability 30%, Operational Load 20%, Cost 10%.
+
+Save to `services/[TOOL]/scoring.md`:
 
 ```markdown
 # Platform: [TOOL]
@@ -30,41 +32,51 @@ Keep answers to one line per field. Save to `services/[TOOL]/scoring.md`:
 ## Timing
 - Build (min): [from bench-start-ts / bench-end-ts]
 - Execution (sec): [trigger to completion]
+- First-time setup (min): [how long for a new dev to boot, run, understand logs]
 
-## Code quality (0-5)
-- Parallel primitive: [score] — [one sentence why]
-- Idempotency: [score] — [one sentence why]
-- Cleanliness: [score] — [one sentence why]
+## Developer Experience (0-5, 40% weight)
+- Onboarding friction: [score] — [can a new dev understand in <30 min?]
+- Code clarity: [score] — [TypeScript-first? DSL? Readable?]
+- Local dev loop: [score] — [hot reload? Fast iteration?]
+- Error debugging: [score] — [logs clear? Can you fix at 2 AM?]
+- Documentation: [score] — [official docs sufficient? Examples?]
 
-## Developer experience (0-5)
-- Local dev loop: [score] — [one line]
-- Flow authoring: [score] — [one line: code vs DSL vs browser UI]
-- Secrets/config: [score] — [one line]
-- Discoverability: [score] — [one line]
-- Git/source-of-truth: [score] — [one line]
-- Debuggability: [score] — [one line]
+**DX Summary:** [one sentence on overall friction]
 
-**Fit:** [2 sentences: structural fit + developer fit — these often diverge, state both]
+## Reliability (0-5, 30% weight)
+- Idempotency: [score] — [deduplication works? Consistent?]
+- Retry handling: [score] — [clear, predictable retry behavior?]
+- Error recovery: [score] — [can failed steps recover gracefully?]
+- Test verification: [y/n] — [did the run complete successfully?]
 
-## Runtime
-- Booted first try: [y/n + rescue if needed]
-- Run completed: [y/n]
-- Parallel steps visible in dashboard: [y/n]
-- Success criteria met: [y/n or which failed]
-- Idempotent: [y/n]
-- Dashboard quality: [0-5] — [one line]
+**Reliability Summary:** [one sentence on production confidence]
 
-## Infra
+## Operational Load (0-5, 20% weight)
 - Local services: [count + names]
-- External deps: [list]
-- RAM at idle: [rough MB]
+- Infra complexity: [score] — [Docker? Database? Or just processes?]
+- Observability: [score] — [dashboard quality? Log clarity?]
+- Maintenance burden: [y/n] — [will this need babysitting?]
 
-## License
-- License: [name]
-- Telemetry: [y/n]
-- Self-host without cloud account: [y/n]
+**Operational Summary:** [one sentence on team burden]
 
-## Surprises
+## Cost & Lock-in (0-5, 10% weight)
+- License: [MIT/Apache/proprietary/other]
+- Vendor lock-in: [y/n] — [can you run entirely self-hosted?]
+- SaaS requirement: [y/n] — [do you HAVE to use their cloud?]
+
+**Cost Summary:** [one sentence on financial & freedom risk]
+
+## Weighted Score (total 0-100)
+- DX: [DX score] × 0.40 = [XX]
+- Reliability: [Reliability score] × 0.30 = [XX]
+- Operational: [Operational score] × 0.20 = [XX]
+- Cost: [Cost score] × 0.10 = [XX]
+- **Total: [XX]/100**
+
+## Trade-offs
+[2-3 bullet points on what you gain vs lose vs other platforms. e.g., "Inngest trades visibility for speed; Hatchet trades DX for operational depth."]
+
+## Surprises & Gotchas
 - [bullet]
 - [bullet]
 ```

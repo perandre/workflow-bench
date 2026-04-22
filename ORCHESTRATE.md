@@ -4,9 +4,9 @@ Run one platform at a time directly in this session — no sub-agents. Between p
 
 ---
 
-## Interview phase — ALWAYS run this first
+## Setup phase — ALWAYS run this first
 
-**Use `AskUserQuestion` for every question** — never plain text.
+**Use `AskUserQuestion` for platforms + mode only** — no team interview needed (always 40+ devs).
 
 ### Step 1 — Platforms + mode (one call, two questions)
 
@@ -21,12 +21,9 @@ Write `platforms.json` with selected slugs. Write `services/<P>/mode.txt` for ea
 - **Flow only**: start timer (`date +%s > .bench-start-ts`) before first line of flow code. Log `buildMinutes`, `executionMinutes`. Set `installMinutes: null`.
 - **Installation included**: start timer before any install/pull. Log all three: `installMinutes`, `buildMinutes`, `executionMinutes`.
 
-### Step 2 — Workflow (one call)
+### Step 2 — Workflow is already defined
 
-`ls ~/Sites/workflow-bench/workflows/` then `AskUserQuestion` with one option per file + "New workflow".
-
-- **Existing**: `cp workflows/<chosen>.md workflow.md`
-- **New**: ask in plain text, save to `workflow.md` and also commit to `workflows/` for the library.
+Workflow should already exist in `workflow.md` (proposed by agent before setup phase, or user provided). If missing, ask in plain text, save to `workflow.md` and commit to `workflows/` library.
 
 ### Step 3 — Confirm and go
 
