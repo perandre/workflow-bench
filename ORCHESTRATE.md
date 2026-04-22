@@ -1,6 +1,62 @@
 # Orchestration Plan
 
-You are running a four-platform durable-workflow benchmark **directly in this session** — no sub-agents. The user watches everything in real time. Run one platform at a time. Between platforms the user will `/clear` to get a fresh context, then paste the next platform's trigger phrase.
+You are running a durable-workflow benchmark **directly in this session** — no sub-agents. The user watches everything in real time. Run one platform at a time. Between platforms the user will `/clear` to get a fresh context, then paste the next platform's trigger phrase.
+
+---
+
+## Interview phase — ALWAYS run this first
+
+When the user says any trigger phrase ("start the bench", "run it", "go", "start with [platform]"), run this interview before touching any platform. Do NOT skip it. Ask questions one at a time and wait for the answer.
+
+### Q1 — Which platforms?
+
+Ask:
+> "Which platforms do you want to benchmark? Options: **inngest**, **mastra**, **hatchet**, **restate**. You can pick all four or any subset — just list them. (Press Enter to use all four.)"
+
+After the user answers, overwrite `~/Sites/workflow-bench/platforms.json` with a JSON array of the selected slugs in the order they want to run them.
+
+### Q2 — Which workflow?
+
+Ask:
+> "Which workflow do you want to test?
+>
+> **1 — Default:** Daily HN AI digest — fetches the top HN stories, summarises each with Gemini AI, posts a ranked digest to Slack. Tests parallel durable steps, LLM integration, and idempotency.
+>
+> **2 — Custom:** You describe the use case. We already have a Slack integration set up (ask Per André for the bot token if you need it). Describe what the workflow should do, what triggers it, what the steps are, and what a successful run looks like."
+
+**If the user picks the default (1):** Copy `~/Sites/workflow-bench/workflow-default.md` to `~/Sites/workflow-bench/workflow.md`.
+
+**If the user picks custom (2):** Save their description to `~/Sites/workflow-bench/workflow.md` using this structure:
+
+```markdown
+## The workflow: "[name the user gave it, or infer one]"
+
+[User's description of what the workflow does, what triggers it, and what each step does]
+
+Available env vars: [list what the user mentions, plus SLACK_BOT_TOKEN / SLACK_PREVIEW_CHANNEL if they want Slack]
+
+No mocks, no stubs — real APIs only.
+
+## Success criteria
+
+[What the user says a successful run looks like — specific things to verify]
+```
+
+If the user's description is thin on success criteria, prompt once: "What should we check at the end to confirm it worked?" Then save the answer.
+
+### Skip the interview if workflow.md is fresh
+
+If `~/Sites/workflow-bench/workflow.md` was modified within the last 60 seconds (check with `stat -f %m ~/Sites/workflow-bench/workflow.md` on macOS), skip the interview entirely — the web UI already wrote the files. Read `workflow.md` and `platforms.json` to confirm what was set, then begin immediately.
+
+### Confirm and begin
+
+After the interview (or after detecting a fresh workflow.md), confirm once in chat:
+
+> "Ready. Benchmarking: [list]. Workflow: [name]. Starting [first platform] now."
+
+Then begin the first platform immediately — no further questions.
+
+---
 
 ## Ground truth files (read before acting)
 
@@ -23,7 +79,7 @@ Always invoke these before writing code for the respective platform:
 
 ## Platform order
 
-Read `~/Sites/workflow-bench/platforms.json` — it lists which platforms to run and in what order. Run them in that order. To add a platform: add its slug to the array and create `results/<slug>/` with a `.gitkeep`. To remove one: delete it from the array.
+Read `~/Sites/workflow-bench/platforms.json` — it lists which platforms to run and in what order. Run them in that order. To add a platform: add its slug to the array and create `services/<slug>/` with a `.gitkeep`. To remove one: delete it from the array.
 
 Default order (as shipped):
 1. **inngest** — baseline
@@ -40,7 +96,7 @@ When the user says "start [platform]" or "run [platform]" or "go" (when context 
 ### 1. Prep
 
 ```bash
-cd ~/Sites/workflow-bench/results/<P>/
+cd ~/Sites/workflow-bench/services/<P>/
 cp ~/Sites/workflow-bench/shared-secrets.env .env
 date +%s > .bench-start-ts
 ```
@@ -48,7 +104,7 @@ date +%s > .bench-start-ts
 ### 2. BUILD — execute BUILD_PROMPT.md inline
 
 Read `BUILD_PROMPT.md` in full. Then carry out every instruction in it directly:
-- Working directory: `~/Sites/workflow-bench/results/<P>/`
+- Working directory: `~/Sites/workflow-bench/services/<P>/`
 - Replace `[TOOL]` with the platform's canonical name ("Inngest", "Mastra", "Hatchet", "Restate")
 - Install packages, write code, boot-check that it at least compiles
 - Write `BENCH_LOG.json` exactly as specified — mandatory
@@ -57,7 +113,7 @@ Read `BUILD_PROMPT.md` in full. Then carry out every instruction in it directly:
 ### 3. Timestamp
 
 ```bash
-date +%s > ~/Sites/workflow-bench/results/<P>/.bench-end-ts
+date +%s > ~/Sites/workflow-bench/services/<P>/.bench-end-ts
 ```
 
 ### 4. SCORE — execute SCORE_PROMPT.md inline
@@ -93,13 +149,13 @@ Do not dump the full `scoring.md` to chat — the user can read it themselves.
 
 ## After all four platforms
 
-After the final platform is scored, read all four `scoring.md` files and synthesize `~/Sites/workflow-bench/comparison.md` per `COMPARE_PROMPT.md`. Do this in-session (the last platform's session, before `/clear`).
+After the final platform is scored, read all four `scoring.md` files and synthesize `~/Sites/workflow-bench/summary.md` per `COMPARE_PROMPT.md`. Do this in-session (the last platform's session, before `/clear`).
 
 Give the user a final chat summary:
 - Ranked recommendation
 - One paragraph per platform
 - Surprises
-- Path to `comparison.md` for full detail
+- Path to `summary.md` for full detail
 
 ---
 
@@ -121,4 +177,4 @@ Trigger phrases:
 
 Confirm once in chat, then begin immediately:
 
-> Starting [platform] build. Working in `results/<P>/`. You'll see everything as it happens.
+> Starting [platform] build. Working in `services/<P>/`. You'll see everything as it happens.

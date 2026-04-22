@@ -11,7 +11,7 @@
 ### 1. Isolate + timer
 
 ```
-cd ~/Sites/workflow-bench/results/<platform>/
+cd ~/Sites/workflow-bench/services/<platform>/
 cp ../../shared-secrets.env .env
 date +%s > .bench-start-ts    # wall-clock start
 claude                        # fresh Claude Code session — DO NOT reuse
@@ -54,8 +54,8 @@ cd ~/Sites/workflow-bench/
 claude
 ```
 
-Paste `COMPARE_PROMPT.md`. Result lands in `comparison.md`.
+Paste `COMPARE_PROMPT.md`. Result lands in `summary.md`.
 
 ## Variance check (optional, recommended)
 
-Pick one platform (Hatchet suggested — newest agent tooling). Repeat steps 1-3 in a new session. Save scoring to `results/<platform>/scoring-run2.md`. Compare.
+Pick one platform (Hatchet suggested — newest agent tooling). Repeat steps 1-3 in a new session. Save scoring to `services/<platform>/scoring-run2.md`. Compare.

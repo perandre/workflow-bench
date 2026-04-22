@@ -3,18 +3,11 @@
 Build a durable, production-quality workflow using **[TOOL]** in TypeScript.
 Output a runnable project in the current directory with a single workflow file + a minimal README.
 
-## The workflow: "Daily HN AI digest"
+## The workflow
 
-Trigger: cron, every day at 08:00 UTC. I will also invoke it manually for testing.
+**Read `~/Sites/workflow-bench/workflow.md` for the full workflow specification**, including what it does, what APIs it calls, what env vars it uses, and what a successful run looks like.
 
-Steps:
-
-1. **Fetch top 30 story IDs** from HackerNews (`https://hacker-news.firebaseio.com/v0/topstories.json`).
-2. **Fetch each story's metadata in parallel** (`/item/{id}.json`). Each fetch is its own durable step — if one fails, skip that story, don't fail the run.
-3. **Filter** to stories with `score >= 100` and a `url` field.
-4. **Summarize each in parallel** using the Google Gemini API (model `gemini-2.5-flash`) via the official `@google/genai` SDK or raw `fetch` — one sentence per story plus 3 tags drawn from `["ai", "dev-tools", "startup", "science", "security", "other"]`. Request structured JSON output (`responseMimeType: "application/json"` with a schema). Each LLM call is its own durable step with retry.
-5. **Rank**: `final_score = hn_score + 20 × (tags includes "ai") + 10 × (tags includes "dev-tools")`.
-6. **Post the top 5** to Slack via `chat.postMessage` (Slack Web API) using bot token `process.env.SLACK_BOT_TOKEN` and channel ID `process.env.SLACK_DIGEST_CHANNEL`. Format as a single markdown message: bullet per story with title, summary, tags, and URL. The message header must include the platform name so it is identifiable in Slack — e.g. `*Daily HN AI Digest — 2026-04-22* [Inngest]`.
+The message header in any outbound notification must include the platform name so it is identifiable — e.g. `*Daily HN AI Digest — 2026-04-22* [Inngest]`.
 
 ## PORT CONFLICT AWARENESS
 
@@ -34,11 +27,10 @@ If the SDK's default configuration points at a cloud endpoint, override it expli
 ## Requirements
 
 - Every external call is a named, durable step (auto-retry on transient failure).
-- Use the tool's idiomatic parallel primitive for steps 2 and 4.
-- Idempotent: running the same day twice must not double-post (dedupe key based on UTC date).
-- No mocks, no stubs — real HN API, real Gemini API, real Slack Web API.
-- Available env vars: `GOOGLE_API_KEY`, `SLACK_BOT_TOKEN`, `SLACK_DIGEST_CHANNEL`, `SLACK_PREVIEW_CHANNEL` (SLACK_PREVIEW_CHANNEL is unused for this workflow but exists in the .env — ignore it).
-- Include the minimum infra commands to run this locally (dev server, worker process, whatever the tool needs). The README must tell me exactly how to invoke the cron manually for testing.
+- Use the tool's idiomatic parallel primitive for any steps that can run concurrently.
+- Idempotent: running the same trigger twice for the same logical unit (e.g. same UTC date) must not duplicate side effects. Use a dedupe key.
+- No mocks, no stubs — use real APIs as described in `workflow.md`.
+- Include the minimum infra commands to run this locally (dev server, worker process, whatever the tool needs). The README must tell me exactly how to invoke the workflow manually for testing.
 
 ## Mandatory end-to-end verification — do this BEFORE writing BENCH_LOG.json
 
@@ -48,7 +40,7 @@ After writing the code, you must boot the project and confirm the workflow actua
 2. **Trigger the workflow immediately** using the tool's idiomatic manual trigger method (HTTP endpoint, CLI command, dashboard button, etc.). Do not wait for the cron to fire on its own schedule.
 3. Watch logs / dashboard until the run either completes successfully or hits a clear error.
 4. **If it fails: debug and fix it. Repeat until the workflow completes end-to-end at least once.** There is no "it compiles, good enough" — the workflow must actually run.
-5. A successful run means: HN fetch steps fired, Gemini summarisation happened, a Slack message appeared in `SLACK_DIGEST_CHANNEL`, and no unhandled exceptions crashed the worker. Confirm the Slack message appeared — don't assume it did.
+5. Verify success per the "Success criteria" section in `workflow.md`. Confirm each criterion is met — don't assume.
 
 Do not write `BENCH_LOG.json` until a successful run has completed. If you cannot get a working run after genuine debugging effort, write `BENCH_LOG.json` with `"buildStatus": "failed"` and a clear `"failureReason"` field explaining exactly what you tried and what is still broken.
 
@@ -69,7 +61,7 @@ After you finish, write `BENCH_LOG.json` in the project root with this exact sha
   "files": ["relative/path/file1.ts", "..."],
   "totalLoc": 123,
   "bootCommand": "npm run dev",
-  "manualTriggerCommand": "the exact command or UI action to invoke the cron now",
+  "manualTriggerCommand": "the exact command or UI action to invoke the workflow now",
   "infra": {
     "services": ["list of local processes/containers"],
     "externalDeps": ["Postgres", "Redis", "none", ...]
@@ -82,7 +74,7 @@ Do not skip this file. The scoring pass depends on it.
 
 ## Output shape
 
-- `digest.ts` (or whatever the tool's idiomatic file name is)
+- Workflow file (idiomatic name for the platform, e.g. `digest.ts`)
 - `package.json`
 - `README.md` — ~10 lines: install, run, trigger manually
 - `BENCH_LOG.json` — described above

@@ -1,22 +1,31 @@
 # Workflow Bench — project instructions
 
-This directory is a **benchmark harness** for comparing four code-first durable-workflow platforms: Inngest, Mastra, Hatchet, Restate. Nothing else lives here.
+This directory is a **benchmark harness** for comparing code-first durable-workflow platforms: Inngest, Mastra, Hatchet, Restate.
 
 ## Start here
 
 If the user says anything like "start the bench", "run it", "go", "start with Inngest", or otherwise signals they want the benchmark to begin: **read `ORCHESTRATE.md` first, then execute it**. Do not improvise.
 
-Confirm once in chat ("Starting 4-platform bench per ORCHESTRATE.md. Inngest first, then Mastra, Hatchet, Restate. ~2-3h.") and begin.
+`ORCHESTRATE.md` begins with an interview phase — ask the user which platforms and which workflow before doing anything else.
 
-## Key files in this directory
+## Repo structure
 
-- `ORCHESTRATE.md` — the plan you follow when running the bench
+**Tracked in git (UPPERCASE or named files):**
+- `ORCHESTRATE.md` — the plan you follow when running the bench (includes the interview phase)
 - `BUILD_PROMPT.md` — executed inline for each platform's build phase
 - `SCORE_PROMPT.md` — executed inline for each platform's score phase
-- `COMPARE_PROMPT.md` — the final aggregation you do in-session after all four complete
+- `COMPARE_PROMPT.md` — the final aggregation you do in-session after all platforms complete
+- `COMPARISON.md` — the living 7-dimension scoring table; updated after each bench run
+- `workflow.md` — the workflow spec for this run (written during the interview; read by build + score)
+- `workflow-default.md` — the default "Daily HN AI digest" spec (copied to `workflow.md` if user picks the default)
 - `RUNBOOK.md` — original manual runbook (reference only)
-- `shared-secrets.env` — `GOOGLE_API_KEY`, `SLACK_BOT_TOKEN`, `SLACK_PREVIEW_CHANNEL`, `SLACK_DIGEST_CHANNEL`. Do not commit; do not echo contents to chat.
-- `results/<platform>/` — where each platform's build + scoring lands
+- `platforms.json` — ordered list of platforms to benchmark
+- `services/<platform>/.gitkeep` — marks a platform as part of the roster
+
+**Gitignored (generated, local-only):**
+- `shared-secrets.env` — API keys. Do not commit; do not echo contents to chat.
+- `services/<platform>/*` — all build output, code, logs, and scoring for each platform
+- `summary.md` — full narrative synthesis generated at the end of a complete bench run
 
 ## Ground rules
 

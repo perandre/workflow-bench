@@ -2,7 +2,7 @@
 
 You are scoring a workflow-automation benchmark run. The build is already done — do not modify or "improve" the build's code. Your job is only to measure it.
 
-Working directory: `~/Sites/workflow-bench/results/[TOOL]/`
+Working directory: `~/Sites/workflow-bench/services/[TOOL]/`
 
 ## Step 1 — gather objective data
 
@@ -55,7 +55,7 @@ Trigger the workflow a second time (same logical unit — e.g. same UTC date). C
 
 ## Step 6 — write the rubric
 
-Save to `~/Sites/workflow-bench/results/[TOOL]/scoring.md` using this exact structure. Fill every field. Use `?` only when you genuinely can't measure.
+Save to `~/Sites/workflow-bench/services/[TOOL]/scoring.md` using this exact structure. Fill every field. Use `?` only when you genuinely can't measure.
 
 ```markdown
 # Platform: [TOOL]

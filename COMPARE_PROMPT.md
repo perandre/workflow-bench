@@ -6,7 +6,7 @@ You are aggregating completed benchmark rubrics into a ranked comparison.
 
 ## Inputs
 
-Read `~/Sites/workflow-bench/platforms.json` to get the list of platforms that were benchmarked this run. For each platform `<P>`, read `results/<P>/scoring.md`.
+Read `~/Sites/workflow-bench/platforms.json` to get the list of platforms that were benchmarked this run. For each platform `<P>`, read `services/<P>/scoring.md`.
 
 Also read `~/Sites/workflow-bench/workflow.md` — the recommendation should be framed in terms of the workflow that was actually tested.
 
@@ -14,7 +14,7 @@ Also read `~/Sites/workflow-bench/workflow.md` — the recommendation should be 
 
 1. Read all rubrics.
 2. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git. Add or update columns for any newly benchmarked platforms. Score each platform on the 7 dimensions defined there. Do not remove existing platform columns.
-3. Produce `~/Sites/workflow-bench/comparison.md` (gitignored) with the full narrative:
+3. Produce `~/Sites/workflow-bench/summary.md` (gitignored) with the full narrative:
    - **Side-by-side table** — one column per platform, rows = rubric fields.
    - **Ranked recommendation** framed around the tested workflow — which platform handles this kind of workload best, and why?
    - **Surprises** — anything a platform did noticeably better or worse than its earlier positioning predicted.
