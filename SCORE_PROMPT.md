@@ -25,17 +25,17 @@ If it fails to boot, try **one** reasonable fix (obvious typo, missing env var y
 
 ## Step 3 — trigger the workflow immediately (do NOT wait for cron)
 
+First, read `~/Sites/workflow-bench/workflow.md` — it defines what this workflow does and what a successful run looks like. Use the "Success criteria" section to drive your verification below.
+
 Use the `manualTriggerCommand` from `BENCH_LOG.json` to fire the workflow **right now**. Do not wait for the scheduled cron time. Run the command, then actively watch for completion.
 
 ```bash
 # Run the manualTriggerCommand from BENCH_LOG.json exactly as written
 ```
 
-Wait for the run to finish — watch the logs or dashboard until it reaches a terminal state (completed or errored). Then verify in order:
+Wait for the run to finish — watch the logs or dashboard until it reaches a terminal state (completed or errored). Then verify each item listed under "Success criteria" in `workflow.md`. Also verify:
 - Run kicked off (dashboard shows it / logs emit a run ID): y/n
-- All 30 parallel fetches visible as individual steps in the dashboard: y/n
-- Top 5 digest arrived in the Slack channel matching `SLACK_DIGEST_CHANNEL`: y/n — **check the actual Slack channel, don't assume**
-- Run completed without errors: y/n
+- Run completed without unhandled errors: y/n
 
 If the `manualTriggerCommand` in `BENCH_LOG.json` is missing or wrong, find the correct trigger method from the README or platform docs and use that. Log what you used.
 
@@ -49,8 +49,8 @@ Log which test you ran and the outcome.
 
 ## Step 5 — idempotency test
 
-Trigger the cron a second time (same UTC date). Confirm:
-- No duplicate Slack post
+Trigger the workflow a second time (same logical unit — e.g. same UTC date). Confirm:
+- No duplicate side effects (per the "Success criteria" in `workflow.md`)
 - Dashboard either shows a skipped run or a deduped run
 
 ## Step 6 — write the rubric
@@ -76,10 +76,28 @@ Save to `~/Sites/workflow-bench/results/[TOOL]/scoring.md` using this exact stru
 - Idempotency correct: [0-5]
 - Overall code cleanliness: [0-5]
 
+## Developer experience (0-5)
+
+**This section is mandatory and must be scored with the same rigour as runtime. "It works" is not enough — score what it's like to build and iterate on it.**
+
+- Local dev loop (0-5): [How fast is the edit→run cycle? Can you develop without Docker/cloud? Is there file-watch/hot-reload? Penalise hard for "must boot full stack to see any change".]
+- Flow authoring (0-5): [Is the workflow defined in real typed code in your editor, or in a JSON/YAML DSL / browser UI? Do you get IDE support, type safety, and local unit tests across step boundaries?]
+- Secrets / config (0-5): [How much boilerplate to wire in a secret? Is the mechanism obvious from docs or did it require discovery?]
+- Discoverability (0-5): [Could you find correct API/SDK usage from docs alone, or did you need to dig into source/openapi/package internals?]
+- Git / source-of-truth (0-5): [Is the workflow definition version-controllable as readable code? Is the database/platform the source of truth instead of your repo?]
+- Debuggability once running (0-5): [Per-step visibility, log access, replay — score this separately from the build-time DX above.]
+
+**Fit assessment (required):** Write 2–4 sentences that explicitly separate:
+1. *Structural fit* — do the platform's primitives match this workflow's shape?
+2. *Developer fit* — is the day-to-day build loop good for a code-first developer?
+
+These often diverge. State both.
+
 ## Runtime
 - Booted first try: [y/n]
-- Cron trigger fired manually as expected: [y/n]
-- All 30 parallel fetches visible in dashboard: [y/n]
+- Trigger fired manually as expected: [y/n]
+- Parallel steps visible as individual steps in dashboard: [y/n]
+- Success criteria from workflow.md all met: [y/n, or list which ones failed]
 - Failure test passed: [y/n + which test]
 - Idempotent on second trigger: [y/n]
 - Dashboard quality for debugging (0-5): [with justification]
