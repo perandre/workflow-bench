@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useBenchStore } from "@/lib/store"
+import { platformColor } from "@/lib/platform-colors"
 import { Play, X } from "lucide-react"
 
 const DEFAULT_PLATFORMS = ["inngest", "mastra", "hatchet", "restate"]
@@ -67,39 +68,29 @@ export function WorkflowForm() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Platform selection */}
       <section>
-        <label className="block text-xs font-medium text-white/35 uppercase tracking-widest mb-3">
+        <label className="block text-xs font-semibold text-white/60 uppercase tracking-widest mb-4">
           Platforms
         </label>
-        <div className="flex flex-wrap gap-2 mb-3">
-          {DEFAULT_PLATFORMS.map(p => {
-            const selected = selectedPlatforms.includes(p)
-            return (
-              <button
-                key={p}
-                onClick={() => togglePlatform(p)}
-                className={[
-                  "px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all duration-200",
-                  selected
-                    ? "border-accent/50 bg-accent/10 text-white shadow-[0_0_12px_oklch(0.62_0.22_267/0.2)]"
-                    : "border-white/8 text-white/35 hover:border-white/18 hover:text-white/60",
-                ].join(" ")}
-              >
-                {p}
-              </button>
-            )
-          })}
-          {selectedPlatforms.filter(p => !DEFAULT_PLATFORMS.includes(p)).map(p => (
-            <button
+        <div className="flex flex-wrap gap-2.5 mb-4">
+          {DEFAULT_PLATFORMS.map(p => (
+            <PlatformPill
               key={p}
-              onClick={() => togglePlatform(p)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium border border-accent/30 bg-accent/8 text-accent/80 transition-colors hover:border-accent/50"
-            >
-              {p}
-              <X className="w-3 h-3 opacity-60" />
-            </button>
+              name={p}
+              selected={selectedPlatforms.includes(p)}
+              onToggle={() => togglePlatform(p)}
+            />
+          ))}
+          {selectedPlatforms.filter(p => !DEFAULT_PLATFORMS.includes(p)).map(p => (
+            <PlatformPill
+              key={p}
+              name={p}
+              selected
+              removable
+              onToggle={() => togglePlatform(p)}
+            />
           ))}
         </div>
         <div className="flex gap-2">
@@ -116,10 +107,10 @@ export function WorkflowForm() {
 
       {/* Workflow selection */}
       <section>
-        <label className="block text-xs font-medium text-white/35 uppercase tracking-widest mb-3">
+        <label className="block text-xs font-semibold text-white/60 uppercase tracking-widest mb-4">
           Workflow
         </label>
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           {[
             {
               id: true,
@@ -138,29 +129,30 @@ export function WorkflowForm() {
                 key={String(id)}
                 onClick={() => setUseDefault(id)}
                 className={[
-                  "p-4 rounded-xl border text-left transition-all duration-200",
+                  "relative p-5 pl-6 min-h-[120px] rounded-xl border text-left transition-all duration-200",
                   active
-                    ? "border-accent/40 bg-accent/8 shadow-[0_0_16px_oklch(0.62_0.22_267/0.15)]"
-                    : "border-white/8 hover:border-white/15 hover:bg-white/3",
+                    ? "border-l-4 border-l-indigo-400 border-white/15 bg-white/[0.04] shadow-[0_0_24px_-4px_oklch(0.62_0.22_267/0.45)]"
+                    : "border-white/10 bg-white/[0.015] hover:border-white/20 hover:bg-white/[0.04]",
                 ].join(" ")}
               >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className={[
-                    "w-1.5 h-1.5 rounded-full transition-colors",
-                    active ? "bg-accent" : "bg-white/20",
-                  ].join(" ")} />
-                  <span className="text-sm font-medium text-white">{title}</span>
+                <div className="mb-2">
+                  <span className={[
+                    "text-base font-semibold tracking-tight",
+                    active ? "text-white" : "text-white/85",
+                  ].join(" ")}>
+                    {title}
+                  </span>
                 </div>
-                <p className="text-xs text-white/35 leading-relaxed pl-3.5">{desc}</p>
+                <p className="text-sm text-white/70 leading-relaxed">{desc}</p>
               </button>
             )
           })}
         </div>
 
         {useDefault === false && (
-          <div className="space-y-4">
+          <div className="space-y-4 mt-5">
             <div>
-              <label className="block text-xs text-white/35 mb-1.5 font-medium">Workflow name</label>
+              <label className="block text-xs text-white/65 mb-2 font-semibold uppercase tracking-wider">Workflow name</label>
               <Input
                 placeholder="e.g. Order processing pipeline"
                 value={workflowName}
@@ -168,7 +160,7 @@ export function WorkflowForm() {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/35 mb-1.5 font-medium">What should the workflow do?</label>
+              <label className="block text-xs text-white/65 mb-2 font-semibold uppercase tracking-wider">What should the workflow do?</label>
               <Textarea
                 placeholder="Describe the trigger, steps, and what APIs it calls. Slack integration is available."
                 value={workflow}
@@ -177,7 +169,7 @@ export function WorkflowForm() {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/35 mb-1.5 font-medium">Success criteria</label>
+              <label className="block text-xs text-white/65 mb-2 font-semibold uppercase tracking-wider">Success criteria</label>
               <Textarea
                 placeholder="e.g. Message posted to Slack, no duplicate on second run, all steps visible in dashboard"
                 value={successCriteria}
@@ -190,23 +182,57 @@ export function WorkflowForm() {
       </section>
 
       {error && (
-        <p className="text-danger text-sm bg-danger/8 border border-danger/20 rounded-lg px-3 py-2">
+        <p className="text-danger text-sm bg-danger/10 border border-danger/25 rounded-lg px-3.5 py-2.5">
           {error}
         </p>
       )}
 
-      <Button
-        size="lg"
+      <button
         onClick={handleSubmit}
         disabled={loading || !selectedPlatforms.length || useDefault === null}
-        className="w-full"
+        className="cta-gradient w-full inline-flex items-center justify-center gap-2.5 h-12 rounded-xl text-base font-semibold text-white tracking-tight shadow-[0_0_28px_-4px_oklch(0.6_0.22_280/0.6)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
-        <Play className="w-4 h-4" />
+        <Play className="w-4.5 h-4.5" strokeWidth={2.5} />
         {loading
           ? "Starting…"
           : `Run benchmark${selectedPlatforms.length ? ` · ${selectedPlatforms.length} platform${selectedPlatforms.length !== 1 ? "s" : ""}` : ""}`
         }
-      </Button>
+      </button>
     </div>
+  )
+}
+
+function PlatformPill({
+  name, selected, removable, onToggle,
+}: {
+  name: string; selected: boolean; removable?: boolean; onToggle: () => void
+}) {
+  const color = platformColor(name)
+  const style: React.CSSProperties = selected
+    ? {
+        backgroundColor: `${color}33`,
+        borderColor: color,
+        boxShadow: `0 0 18px -2px ${color}66`,
+      }
+    : {
+        borderLeft: `3px solid ${color}`,
+        borderTopColor: "rgba(255,255,255,0.1)",
+        borderRightColor: "rgba(255,255,255,0.1)",
+        borderBottomColor: "rgba(255,255,255,0.1)",
+        backgroundColor: "rgba(255,255,255,0.015)",
+      }
+
+  return (
+    <button
+      onClick={onToggle}
+      style={style}
+      className={[
+        "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold border tracking-tight transition-all duration-200 capitalize",
+        selected ? "text-white" : "text-white/70 hover:text-white",
+      ].join(" ")}
+    >
+      {name}
+      {removable && <X className="w-3.5 h-3.5 opacity-70" />}
+    </button>
   )
 }

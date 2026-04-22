@@ -7,13 +7,13 @@ export function Badge({ children, variant = "default", className }: {
 }) {
   return (
     <span className={cn(
-      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium tracking-tight",
-      variant === "default" && "bg-white/8 text-white/60",
-      variant === "success" && "bg-success/12 text-success",
-      variant === "error" && "bg-danger/12 text-danger",
-      variant === "warning" && "bg-warning/12 text-warning",
-      variant === "running" && "bg-running/12 text-running",
-      variant === "pending" && "bg-white/5 text-white/25",
+      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-tight",
+      variant === "default" && "bg-white/10 text-white/80",
+      variant === "success" && "bg-success/15 text-success",
+      variant === "error" && "bg-danger/15 text-danger",
+      variant === "warning" && "bg-warning/15 text-warning",
+      variant === "running" && "bg-running/15 text-running",
+      variant === "pending" && "bg-white/8 text-white/55",
       className
     )}>
       {variant === "running" && (

@@ -1,6 +1,7 @@
 import { Fragment } from "react"
 import type { ScoredPlatform } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { platformColor } from "@/lib/platform-colors"
 
 function cellColor(val: string): string {
   const n = parseInt(val)
@@ -12,7 +13,7 @@ function cellColor(val: string): string {
   const lower = val.toLowerCase()
   if (lower.startsWith("y")) return "text-success"
   if (lower.startsWith("n")) return "text-danger"
-  return "text-white/50"
+  return "text-white/75"
 }
 
 const ROWS: { label: string; key: keyof ScoredPlatform; section?: string }[] = [
@@ -35,41 +36,62 @@ const ROWS: { label: string; key: keyof ScoredPlatform; section?: string }[] = [
 
 export function ComparisonTable({ scores }: { scores: ScoredPlatform[] }) {
   let lastSection = ""
+  let rowIndex = 0
 
   return (
     <table className="w-full text-sm border-collapse">
       <thead>
         <tr>
-          <th className="text-left pb-3 pr-6 text-[10px] font-semibold text-white/25 uppercase tracking-widest w-44">
+          <th className="text-left pb-4 pr-6 text-[11px] font-semibold text-white/60 uppercase tracking-widest w-44">
             Criterion
           </th>
-          {scores.map(s => (
-            <th key={s.platform} className="text-left pb-3 px-3 font-semibold text-white capitalize text-sm">
-              {s.platform}
-            </th>
-          ))}
+          {scores.map(s => {
+            const color = platformColor(s.platform)
+            return (
+              <th
+                key={s.platform}
+                className="text-left pb-4 px-3 font-bold capitalize text-base"
+                style={{
+                  borderTop: `3px solid ${color}`,
+                  color,
+                }}
+              >
+                <span className="inline-block pt-2">{s.platform}</span>
+              </th>
+            )
+          })}
         </tr>
       </thead>
       <tbody>
         {ROWS.map(({ label, key, section }) => {
           const showSection = section && section !== lastSection
-          if (showSection) lastSection = section ?? ""
+          if (showSection) {
+            lastSection = section ?? ""
+            rowIndex = 0
+          }
+          const zebra = rowIndex % 2 === 0 ? "bg-white/[0.02]" : "bg-transparent"
+          rowIndex++
 
           return (
             <Fragment key={key}>
               {showSection && (
                 <tr>
-                  <td colSpan={scores.length + 1} className="pt-5 pb-1.5">
-                    <span className="text-[10px] font-semibold text-white/20 uppercase tracking-widest">
-                      {section}
-                    </span>
+                  <td
+                    colSpan={scores.length + 1}
+                    className="pt-4"
+                  >
+                    <div className="rounded-md bg-white/[0.05] border border-white/10 px-3 py-2 mb-1">
+                      <span className="text-[11px] font-semibold text-white/75 uppercase tracking-widest">
+                        {section}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               )}
-              <tr className="border-t border-white/5 hover:bg-white/[0.02] transition-colors">
-                <td className="py-2 pr-6 text-xs text-white/35">{label}</td>
+              <tr className={cn("border-t border-white/[0.06] hover:bg-white/[0.04] transition-colors", zebra)}>
+                <td className="py-2.5 pr-6 text-sm text-white/65">{label}</td>
                 {scores.map(s => (
-                  <td key={s.platform} className={cn("py-2 px-3 text-xs font-medium", cellColor(String(s[key])))}>
+                  <td key={s.platform} className={cn("py-2.5 px-3 text-sm font-medium", cellColor(String(s[key])))}>
                     {String(s[key])}
                   </td>
                 ))}
