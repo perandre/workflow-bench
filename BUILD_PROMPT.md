@@ -8,6 +8,16 @@ Read `~/Sites/workflow-bench/workflow.md` for the full spec — what it does, wh
 
 The Slack message header must include the platform name: e.g. `*Daily HN AI Digest — 2026-04-22* [Inngest]`.
 
+## Adding flows, not replacing them
+
+A platform's `services/<P>/` directory accumulates flows over time — one file per workflow, all registered with the worker. **Never overwrite an existing flow file.** Instead:
+
+1. Check what flow files already exist in `src/` (or equivalent).
+2. Create a new file named after the workflow (e.g. `src/hn-digest.ts`, `src/reddit-norwegian.ts`).
+3. Register the new flow alongside existing ones in the worker entry point.
+
+This means a worker may run multiple flows simultaneously — that's intentional.
+
 ## Ports
 
 Pick a port ≥ 4000 for any worker/app process. Don't probe common ports — just pick a high one (e.g. 4100, 4200) and use it. Document it in `BENCH_LOG.json`.

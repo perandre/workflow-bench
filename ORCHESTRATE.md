@@ -36,10 +36,10 @@ One line in chat: "Ready. Benchmarking: [list]. Workflow: [name]. Starting [firs
 
 ## Before starting any platform
 
-1. **Check for existing build**: run `ls ~/Sites/workflow-bench/services/<P>/` — if there are files beyond `.gitkeep` and `mode.txt`, use `AskUserQuestion`:
-   > "Existing build found in services/<P>/. What do you want to do?"
-   - "Score existing build" → skip to step SCORE
-   - "Rebuild for this workflow" → wipe `src/` and rebuild
+1. **Check for existing build**: run `ls ~/Sites/workflow-bench/services/<P>/src/` (or equivalent) — if flow files already exist, use `AskUserQuestion`:
+   > "Existing flows found in services/<P>/. What do you want to do?"
+   - "Add new flow for this workflow" → create a new flow file alongside existing ones; register it in the worker
+   - "Score an existing flow" → ask which flow to score, then skip to SCORE
 
 2. **Read gotchas**: scan the **Known gotchas** table in `COMPARISON.md` for this platform. Apply before writing code.
 
