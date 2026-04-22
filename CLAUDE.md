@@ -6,7 +6,7 @@ This directory is a **benchmark harness** for comparing code-first durable-workf
 
 If the user says anything like "start the bench", "run it", "go", "start with Inngest", or otherwise signals they want the benchmark to begin: **read `ORCHESTRATE.md` first, then execute it**. Do not improvise.
 
-`ORCHESTRATE.md` begins with an interview phase — ask the user which platforms and which workflow before doing anything else.
+`ORCHESTRATE.md` begins with an interview phase — use `AskUserQuestion` to ask the user which platforms, which workflow, and which mode before doing anything else.
 
 ## Repo structure
 
@@ -16,9 +16,8 @@ If the user says anything like "start the bench", "run it", "go", "start with In
 - `SCORE_PROMPT.md` — executed inline for each platform's score phase
 - `COMPARE_PROMPT.md` — the final aggregation you do in-session after all platforms complete
 - `COMPARISON.md` — the living 7-dimension scoring table; updated after each bench run
-- `workflow.md` — the workflow spec for this run (written during the interview; read by build + score)
-- `workflow-default.md` — the default "Daily HN AI digest" spec (copied to `workflow.md` if user picks the default)
-- `RUNBOOK.md` — original manual runbook (reference only)
+- `workflows/` — library of reusable workflow specs; user picks one at interview time
+- `workflow.md` — the active spec for the current run (copied from `workflows/` or written fresh during the interview)
 - `platforms.json` — ordered list of platforms to benchmark
 - `services/<platform>/.gitkeep` — marks a platform as part of the roster
 

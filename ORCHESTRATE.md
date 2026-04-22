@@ -6,27 +6,30 @@ You are running a durable-workflow benchmark **directly in this session** — no
 
 ## Interview phase — ALWAYS run this first
 
-When the user says any trigger phrase ("start the bench", "run it", "go", "start with [platform]"), run this interview before touching any platform. Do NOT skip it. Ask questions one at a time and wait for the answer.
+When the user says any trigger phrase ("start the bench", "run it", "go", "start with [platform]"), run this interview before touching any platform. Do NOT skip it.
 
-### Q1 — Which platforms?
+**All interview questions MUST use the `AskUserQuestion` tool** — never ask as plain text. This gives the user a structured TUI picker.
 
-Ask:
-> "Which platforms do you want to benchmark? Options: **inngest**, **mastra**, **hatchet**, **restate**, **windmill**. You can pick any subset — just list them. (Press Enter to use all.)"
+### Q1 + Q3 — Platforms and mode (ask together)
 
-After the user answers, overwrite `~/Sites/workflow-bench/platforms.json` with a JSON array of the selected slugs in the order they want to run them.
+Use `AskUserQuestion` with two questions in one call:
+
+- **Q1** (`multiSelect: true`): "Which platforms do you want to benchmark?" — options: inngest, mastra, hatchet, restate, windmill
+- **Q3** (`multiSelect: false`): "Which mode?" — options: "Flow only" (platform already installed; clock starts at first line of flow code), "Installation included" (start from zero; clock covers install + build)
+
+After the user answers, overwrite `~/Sites/workflow-bench/platforms.json` with a JSON array of selected slugs in the order listed. Record mode in `services/<P>/mode.txt` as `flow-only` or `installation-included` for each platform.
+
+**Timer rules:**
+- **Installation included**: `date +%s > .bench-start-ts` before any install/pull step. Record `installMinutes`, `buildMinutes`, `executionMinutes` in `BENCH_LOG.json`.
+- **Flow only**: `date +%s > .bench-start-ts` before writing the first line of flow code. Record `buildMinutes` and `executionMinutes` only. Set `installMinutes` to `null`.
 
 ### Q2 — Which workflow?
 
-Ask:
-> "Which workflow do you want to test?
->
-> **1 — Default:** Daily HN AI digest — fetches the top HN stories, summarises each with Gemini AI, posts a ranked digest to Slack. Tests parallel durable steps, LLM integration, and idempotency.
->
-> **2 — Custom:** You describe the use case. We already have a Slack integration set up (ask Per André for the bot token if you need it). Describe what the workflow should do, what triggers it, what the steps are, and what a successful run looks like."
+First read `~/Sites/workflow-bench/workflows/` to get the list of available specs. Then use `AskUserQuestion` (`multiSelect: false`) with one option per workflow file (label = workflow name from first heading, description = one-line summary) plus a "New workflow" option.
 
-**If the user picks the default (1):** Copy `~/Sites/workflow-bench/workflow-default.md` to `~/Sites/workflow-bench/workflow.md`.
+**If the user picks an existing workflow:** Copy that file to `~/Sites/workflow-bench/workflow.md`.
 
-**If the user picks custom (2):** Save their description to `~/Sites/workflow-bench/workflow.md` using this structure:
+**If the user picks "New workflow":** Ask them to describe it in chat (plain text is fine here — the structured picker can't capture a freeform description). Save their description to `~/Sites/workflow-bench/workflow.md` using this structure:
 
 ```markdown
 ## The workflow: "[name the user gave it, or infer one]"
@@ -42,18 +45,7 @@ No mocks, no stubs — real APIs only.
 [What the user says a successful run looks like — specific things to verify]
 ```
 
-If the user's description is thin on success criteria, prompt once: "What should we check at the end to confirm it worked?" Then save the answer.
-
-### Q3 — Mode?
-
-Ask:
-> "Which mode?
->
-> **Installation included** — start the clock from zero: pull Docker images, install packages, configure the service, build the flow, run it. Use this the first time you test a platform.
->
-> **Flow only** — the platform software is already installed and configured on this machine. Start the clock at 'build the flow'. Use this to retest a platform you've already set up."
-
-Record the answer in `services/<P>/mode.txt` as either `installation-included` or `flow-only` for each platform. This affects what the timer covers and what gets recorded in `COMPARISON.md`.
+If the user's description is thin on success criteria, ask once via `AskUserQuestion`: "What should we verify at the end?" with 2–3 suggested criteria as options (multiSelect). Then save and **also write the new spec to `workflows/`** so it joins the library.
 
 **Timer rules:**
 - **Installation included**: `date +%s > .bench-start-ts` before any install/pull step. Record three split times in `BENCH_LOG.json`: `installMinutes` (install done → ready to write code), `buildMinutes` (first line of code → first green run), `executionMinutes` (trigger → confirmed output).
