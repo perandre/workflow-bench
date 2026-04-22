@@ -37,6 +37,17 @@ If the user says anything like "start the bench", "run it", "go", "start with In
 
 Something is wrong. Tell the user and stop — do not try to reconstruct the plan from memory.
 
+## Continuous improvement protocol
+
+After each benchmark run completes:
+1. **Document learnings**: Update `## Learnings from benchmarks` with platform, date, gotchas found, DX observations, and patterns discovered.
+2. **Improve prompts**: If a BUILD_PROMPT or SCORE_PROMPT issue caused confusion or extra debugging, refine the prompt text to prevent recurrence.
+3. **Update gotchas table**: If COMPARISON.md's "Known gotchas" section is out of date or missing a pattern, add it.
+4. **Refactor BUILD_PROMPT**: If a pattern (e.g., XML parsing, port config) is reusable, extract it into a helper or example in the prompt itself.
+5. **Commit incrementally**: Each framework improvement is a separate commit with a clear message (e.g., "Improve BUILD_PROMPT port config guidance").
+
+This ensures the framework gets smarter with each run, reducing friction and eliminating repeated gotchas.
+
 ## Learnings from benchmarks
 
 ### Inngest (2026-04-23)
@@ -45,4 +56,4 @@ Something is wrong. Tell the user and stop — do not try to reconstruct the pla
 - **arXiv API parsing**: XML response has `<entry>` wrapper for results. Regex must target entry-level tags, not feed-level. Store XML parsing patterns for reuse.
 - **Execution timing**: ~1 second end-to-end for 2-step workflows (fetch + post). Very fast locally.
 - **DX strengths**: TypeScript-first, hot reload, clean step API, no DSL. Minimal friction for fast iteration.
-- **Framework improvement**: Add prompts to BUILD_PROMPT.md about verifying environment port config before booting services.
+- **Framework improvement**: Port config must be synchronized across all npm scripts. Add check in ORCHESTRATE.md pre-flight.
