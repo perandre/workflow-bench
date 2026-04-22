@@ -1,0 +1,21 @@
+# Secrets
+shared-secrets.env
+.env
+.slack-app.json
+
+# Results — all generated build/score output; only .gitkeep is tracked
+results/*/*
+results/*/.*
+!results/*/.gitkeep
+
+# Top-level generated output
+comparison.md
+
+# Claude local/machine-specific settings
+.claude/settings.local.json
+
+# Node
+node_modules/
+dist/
+.next/
+.DS_Store
