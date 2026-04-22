@@ -36,3 +36,13 @@ If the user says anything like "start the bench", "run it", "go", "start with In
 ## If ORCHESTRATE.md is missing
 
 Something is wrong. Tell the user and stop — do not try to reconstruct the plan from memory.
+
+## Learnings from benchmarks
+
+### Inngest (2026-04-23)
+- **Port config**: npm script `dev:inngest` must match app server port (was hardcoded to 3003, updated to 4200). Update any new scripts to use env var or ask user upfront.
+- **Idempotency in dev**: Inngest's in-memory DB doesn't persist idempotency state across restarts. CEL expressions work within a session, but second trigger behavior is unclear (initiated new run but appeared to hang). Document this gotcha.
+- **arXiv API parsing**: XML response has `<entry>` wrapper for results. Regex must target entry-level tags, not feed-level. Store XML parsing patterns for reuse.
+- **Execution timing**: ~1 second end-to-end for 2-step workflows (fetch + post). Very fast locally.
+- **DX strengths**: TypeScript-first, hot reload, clean step API, no DSL. Minimal friction for fast iteration.
+- **Framework improvement**: Add prompts to BUILD_PROMPT.md about verifying environment port config before booting services.
