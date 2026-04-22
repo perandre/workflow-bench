@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "Courier New", monospace;
+
+  --color-accent: oklch(0.62 0.22 267);
+  --color-accent-muted: oklch(0.62 0.22 267 / 0.12);
+  --color-success: oklch(0.72 0.15 150);
+  --color-warning: oklch(0.78 0.15 75);
+  --color-danger: oklch(0.65 0.18 25);
+  --color-running: oklch(0.72 0.15 230);
+}
+
+body {
+  background-color: oklch(0.09 0.007 264);
+  background-image:
+    radial-gradient(
+      ellipse 120% 55% at 50% -2%,
+      oklch(0.28 0.14 267 / 0.38),
+      transparent 65%
+    );
+  background-attachment: fixed;
+  color: oklch(0.93 0 0);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: oklch(0.62 0.22 267 / 0.28);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.22 0.01 264);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.32 0.02 264);
+}
+
+.glow-accent {
+  box-shadow: 0 0 24px oklch(0.62 0.22 267 / 0.35);
+}
+.glow-accent-hover:hover {
+  box-shadow: 0 0 32px oklch(0.62 0.22 267 / 0.5);
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

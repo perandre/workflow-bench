@@ -1,0 +1,212 @@
+"use client"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { useBenchStore } from "@/lib/store"
+import { Play, X } from "lucide-react"
+
+const DEFAULT_PLATFORMS = ["inngest", "mastra", "hatchet", "restate"]
+
+const DEFAULT_WORKFLOW = {
+  name: "Daily HN AI Digest",
+  description: "Fetch top 30 HackerNews stories, summarise each with Google Gemini AI, rank by score + AI/dev-tools tags, post top 5 to Slack. Tests parallel durable steps, LLM integration, and idempotency.",
+  successCriteria: "All 30 HN fetch steps visible as individual steps in dashboard. Top 5 digest message appeared in Slack. No duplicate post on second trigger same day.",
+}
+
+export function WorkflowForm() {
+  const router = useRouter()
+  const { initRun } = useBenchStore()
+  const [useDefault, setUseDefault] = useState<boolean | null>(null)
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(DEFAULT_PLATFORMS)
+  const [customPlatform, setCustomPlatform] = useState("")
+  const [workflowName, setWorkflowName] = useState("")
+  const [workflow, setWorkflow] = useState("")
+  const [successCriteria, setSuccessCriteria] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  function togglePlatform(p: string) {
+    setSelectedPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p])
+  }
+
+  function addCustomPlatform() {
+    const p = customPlatform.trim().toLowerCase()
+    if (p && !selectedPlatforms.includes(p)) {
+      setSelectedPlatforms(prev => [...prev, p])
+      setCustomPlatform("")
+    }
+  }
+
+  async function handleSubmit() {
+    if (!selectedPlatforms.length) return setError("Select at least one platform.")
+    const wf = useDefault ? DEFAULT_WORKFLOW : { name: workflowName, description: workflow, successCriteria }
+    if (!useDefault && !wf.description.trim()) return setError("Describe the workflow.")
+
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch("/api/bench/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflow: useDefault ? DEFAULT_WORKFLOW.description : workflow,
+          workflowName: useDefault ? DEFAULT_WORKFLOW.name : workflowName || "Custom Workflow",
+          platforms: selectedPlatforms,
+          successCriteria: useDefault ? DEFAULT_WORKFLOW.successCriteria : successCriteria,
+        }),
+      })
+      const { runId } = await res.json() as { runId: string }
+      initRun(runId, selectedPlatforms)
+      router.push(`/run/${runId}`)
+    } catch (e) {
+      setError(String(e))
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Platform selection */}
+      <section>
+        <label className="block text-xs font-medium text-white/35 uppercase tracking-widest mb-3">
+          Platforms
+        </label>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {DEFAULT_PLATFORMS.map(p => {
+            const selected = selectedPlatforms.includes(p)
+            return (
+              <button
+                key={p}
+                onClick={() => togglePlatform(p)}
+                className={[
+                  "px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all duration-200",
+                  selected
+                    ? "border-accent/50 bg-accent/10 text-white shadow-[0_0_12px_oklch(0.62_0.22_267/0.2)]"
+                    : "border-white/8 text-white/35 hover:border-white/18 hover:text-white/60",
+                ].join(" ")}
+              >
+                {p}
+              </button>
+            )
+          })}
+          {selectedPlatforms.filter(p => !DEFAULT_PLATFORMS.includes(p)).map(p => (
+            <button
+              key={p}
+              onClick={() => togglePlatform(p)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium border border-accent/30 bg-accent/8 text-accent/80 transition-colors hover:border-accent/50"
+            >
+              {p}
+              <X className="w-3 h-3 opacity-60" />
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <Input
+            placeholder="Add platform…"
+            value={customPlatform}
+            onChange={e => setCustomPlatform(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && addCustomPlatform()}
+            className="max-w-56"
+          />
+          <Button variant="outline" size="sm" onClick={addCustomPlatform}>Add</Button>
+        </div>
+      </section>
+
+      {/* Workflow selection */}
+      <section>
+        <label className="block text-xs font-medium text-white/35 uppercase tracking-widest mb-3">
+          Workflow
+        </label>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          {[
+            {
+              id: true,
+              title: "Default workflow",
+              desc: "Daily HN AI digest — Gemini summaries + Slack post. Tests parallel steps, LLM integration, and idempotency.",
+            },
+            {
+              id: false,
+              title: "Custom workflow",
+              desc: "Describe your own scenario — an integration flow, customer process, or any multi-step job.",
+            },
+          ].map(({ id, title, desc }) => {
+            const active = useDefault === id
+            return (
+              <button
+                key={String(id)}
+                onClick={() => setUseDefault(id)}
+                className={[
+                  "p-4 rounded-xl border text-left transition-all duration-200",
+                  active
+                    ? "border-accent/40 bg-accent/8 shadow-[0_0_16px_oklch(0.62_0.22_267/0.15)]"
+                    : "border-white/8 hover:border-white/15 hover:bg-white/3",
+                ].join(" ")}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className={[
+                    "w-1.5 h-1.5 rounded-full transition-colors",
+                    active ? "bg-accent" : "bg-white/20",
+                  ].join(" ")} />
+                  <span className="text-sm font-medium text-white">{title}</span>
+                </div>
+                <p className="text-xs text-white/35 leading-relaxed pl-3.5">{desc}</p>
+              </button>
+            )
+          })}
+        </div>
+
+        {useDefault === false && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs text-white/35 mb-1.5 font-medium">Workflow name</label>
+              <Input
+                placeholder="e.g. Order processing pipeline"
+                value={workflowName}
+                onChange={e => setWorkflowName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/35 mb-1.5 font-medium">What should the workflow do?</label>
+              <Textarea
+                placeholder="Describe the trigger, steps, and what APIs it calls. Slack integration is available."
+                value={workflow}
+                onChange={e => setWorkflow(e.target.value)}
+                className="min-h-[130px]"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/35 mb-1.5 font-medium">Success criteria</label>
+              <Textarea
+                placeholder="e.g. Message posted to Slack, no duplicate on second run, all steps visible in dashboard"
+                value={successCriteria}
+                onChange={e => setSuccessCriteria(e.target.value)}
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
+        )}
+      </section>
+
+      {error && (
+        <p className="text-danger text-sm bg-danger/8 border border-danger/20 rounded-lg px-3 py-2">
+          {error}
+        </p>
+      )}
+
+      <Button
+        size="lg"
+        onClick={handleSubmit}
+        disabled={loading || !selectedPlatforms.length || useDefault === null}
+        className="w-full"
+      >
+        <Play className="w-4 h-4" />
+        {loading
+          ? "Starting…"
+          : `Run benchmark${selectedPlatforms.length ? ` · ${selectedPlatforms.length} platform${selectedPlatforms.length !== 1 ? "s" : ""}` : ""}`
+        }
+      </Button>
+    </div>
+  )
+}
