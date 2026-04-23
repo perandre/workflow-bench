@@ -27,7 +27,7 @@ Between platforms Claude will tell you to `/clear`. After clearing, run:
 /bench-next
 ```
 
-to pick up where you left off. Repeat until all platforms are scored and a `summary.md` is produced.
+to pick up where you left off. Repeat until all platforms are scored and `COMPARISON.md` is updated with the latest verdict.
 
 ---
 
@@ -53,8 +53,7 @@ Slack output goes to `#workflow-bench`. The bot token slot is in the secrets tem
 ## What you get out
 
 - `services/<platform>/` — generated code, logs, and `scoring.md` per platform
-- `COMPARISON.md` — cumulative scoreboard across every run (7 dimensions, DX included)
-- `summary.md` — narrative synthesis of the latest run
+- `COMPARISON.md` — cumulative scoreboard plus opinionated executive summary of the latest run (single source of truth)
 
 ---
 

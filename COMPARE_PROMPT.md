@@ -15,23 +15,24 @@ Collect inputs as follows:
 3. `~/Sites/workflow-bench/platforms.json` — the active-run queue. Use only to distinguish *new this run* from *carried forward*.
 4. `~/Sites/workflow-bench/workflow.md` — the recommendation should be framed in terms of the workflow tested this run.
 
-**Drift check (mandatory)**: for every platform with a `scoring.md`, confirm it has a column in `COMPARISON.md`. If it doesn't, backfill its column before writing `summary.md`. Never run the compare step against `platforms.json` alone.
+**Drift check (mandatory)**: for every platform with a `scoring.md`, confirm it has a column in `COMPARISON.md`. If it doesn't, backfill its column before rewriting the executive summary. Never run the compare step against `platforms.json` alone.
 
 ## Your job
 
 1. Read all rubrics and each platform's `BENCH_LOG.json` (for timing and mode).
-2. **Calculate weighted scores**: DX 40%, Reliability 30%, Operational 20%, Cost 10%. Each platform gets a final score out of 100.
-3. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git. For each newly benchmarked platform:
-   - Add or update its column
-   - Fill the **Mode** row, timing rows, and weighted score (0-100)
-   - Do not remove or overwrite existing platform columns
-4. Produce `~/Sites/workflow-bench/summary.md` (gitignored) with the full narrative:
-   - **Weighted scoring table** — platform vs (DX%, Reliability%, Operational%, Cost%, **Total/100**)
-   - **Clear recommendation** (for 40+ dev team) — one paragraph naming the winner and why. Focus on: *Can the team be productive? Will this scale? Is it a joy or a drag?*
-   - **Trade-offs for runners-up** — one bullet per runner-up explaining what you gain/lose (e.g., "Hatchet: trade DX for observability visibility").
-   - **Workflow-specific insights** — what did THIS workflow expose about each platform? (e.g., "ArXiv-to-Slack is simple enough that all platforms succeeded—DX differences are the real signal.")
-   - **Surprises** — anything a platform did noticeably better or worse than expected.
-   - **Agent-tooling signal** — did platforms with richer agent tooling (MCP/skills) produce measurably better code? One paragraph.
+2. **Calculate weighted scores** per the current rubric at the top of `COMPARISON.md` (DX 30% · Reliability 25% · Operational 15% · Hosting 15% · Ecosystem 10% · Cost 5%). Each platform gets a final score out of 100.
+3. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git, which is also the only synthesis artifact. For each newly benchmarked platform:
+   - Add or update its column in the `Synthesized scores` table (fill the Mode row, timing rows, and weighted total). Do not remove or overwrite existing platform columns.
+   - Append a new entry to the `Run log` section (chronological, append-only).
+   - Append any new gotchas to the `Known gotchas` table.
+4. **Rewrite the `Executive summary` → `Latest verdict` section** (replace in place — this section is not append-only). It is the opinionated, human-readable companion to the table. Include:
+   - **Winner paragraph** (for 40+ dev team) — name the winner and why. Focus on: *Can the team be productive? Will this scale? Is it a joy or a drag?*
+   - **Trade-offs for runners-up** — one bullet per runner-up explaining what you gain/lose.
+   - **Surprises** — anything a platform did noticeably better or worse than expected. Omit the line if there are none; don't manufacture drama.
+   - **Agent-tooling signal** — did richer agent tooling (MCP/skills) produce measurably better code? One paragraph.
+   - Workflow-specific framing where it matters — note what THIS workflow exposed (e.g., "ArXiv-to-Slack is simple enough that DX differences are the real signal").
+
+There is no separate `summary.md` — the executive summary lives in `COMPARISON.md` so there is one source of truth.
 
 ## Anti-bias guardrails
 

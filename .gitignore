@@ -8,9 +8,6 @@ services/*/*
 services/*/.*
 !services/*/.gitkeep
 
-# Top-level generated output
-summary.md
-
 # Claude local/machine-specific settings
 .claude/settings.local.json
 

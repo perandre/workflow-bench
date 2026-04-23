@@ -43,7 +43,7 @@ If either check surfaces findings, surface them to the user before continuing. O
 
 ## 3. If all platforms in `platforms.json` are done
 
-Run the final comparison: read `COMPARE_PROMPT.md`, aggregate **every `services/*/scoring.md` on disk** (not just the ones in `platforms.json`), write `summary.md`, and give the user a one-paragraph ranked recommendation in chat. Also update `COMPARISON.md` per the cumulative rules in `CLAUDE.md`. Done.
+Run the final comparison: read `COMPARE_PROMPT.md`, aggregate **every `services/*/scoring.md` on disk** (not just the ones in `platforms.json`), update `COMPARISON.md` per the cumulative rules in `CLAUDE.md` (scoring table + run log + gotchas + rewritten `Executive summary → Latest verdict`), and give the user a one-paragraph ranked recommendation in chat. Done.
 
 ## 4. Otherwise — start the next platform
 

@@ -34,7 +34,7 @@ Example: User says "fetch arXiv paper, post to Slack."
 - `BUILD_PROMPT.md` — executed inline for each platform's build phase
 - `SCORE_PROMPT.md` — executed inline for each platform's score phase
 - `COMPARE_PROMPT.md` — the final aggregation you do in-session after all platforms complete
-- `COMPARISON.md` — the living 7-dimension scoring table; updated after each bench run
+- `COMPARISON.md` — living scoring table AND the opinionated executive summary. `Latest verdict` is rewritten each run; `Run log` and `Known gotchas` are append-only. Single source of truth — there is no separate `summary.md`.
 - `workflows/` — library of reusable workflow specs; user picks one at interview time
 - `workflow.md` — the active spec for the current run (copied from `workflows/` or written fresh during the interview)
 - `platforms.json` — ordered list of platforms to benchmark
@@ -43,7 +43,6 @@ Example: User says "fetch arXiv paper, post to Slack."
 **Gitignored (generated, local-only):**
 - `shared-secrets.env` — API keys. Do not commit; do not echo contents to chat.
 - `services/<platform>/*` — all build output, code, logs, and scoring for each platform
-- `summary.md` — full narrative synthesis generated at the end of a complete bench run
 
 ## Ground rules
 

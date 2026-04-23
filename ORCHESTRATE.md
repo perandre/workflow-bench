@@ -97,7 +97,7 @@ One paragraph in chat: platform, build time, boot y/n, run outcome, one standout
 
 ## After all platforms
 
-Read all `scoring.md` files, synthesize `summary.md` per `COMPARE_PROMPT.md`. Give user a ranked recommendation in chat.
+Read all `scoring.md` files and update `COMPARISON.md` per `COMPARE_PROMPT.md` (scoring table, run log, gotchas, and rewritten `Executive summary → Latest verdict`). Give user a ranked recommendation in chat.
 
 ## Drift checks (run at end of every bench and at start of `/bench-next`)
 
