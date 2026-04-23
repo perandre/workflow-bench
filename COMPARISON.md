@@ -12,20 +12,22 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 
 **Rewritten every run.** Opinionated take on where the roster stands after the most recent bench — a human-readable companion to the scoring table below. Earlier verdicts are not preserved; the `Run log` section is the archive.
 
-### Latest verdict (2026-04-23, DBOS × lead-lifecycle)
+### Latest verdict (2026-04-23, Kestra × lead-lifecycle + Inngest crash-test follow-up)
 
-**DBOS ties Inngest for the top spot.** If the team already runs Postgres — which most 40+ dev teams do — DBOS delivers Restate-grade durability semantics (workflow-ID idempotency, per-step retry config, crash replay) as a library rather than a separate engine process. Code reads like plain TypeScript; no DSL, no worker class, no vendor cloud, MIT license. The two real downsides are ecosystem depth (early-adopter risk in 2026) and observability (no bundled local dashboard — either pay for Conductor, build an internal status page, or live with SQL against `dbos_system.*`). For a team that values runtime correctness over dashboard polish and is allergic to vendor cloud, DBOS is the pick. For "just works with the richest ecosystem," Inngest remains tied and slightly safer.
+**Top of the roster unchanged: DBOS and Inngest tie at ~82/100, with one caveat for Inngest.** A manual kill-during-durable-sleep test on `inngest-cli dev --persist` (SQLite on disk + embedded in-memory Redis) showed that **Inngest's default self-host does not survive a process restart** — SQLite retains run history and step outputs, but the in-memory Redis loses scheduled wake-ups and `waitForEvent` subscriptions. Fresh events received after restart became orphaned; the paused run stayed `Running` indefinitely; even new triggers hung until the worker itself also restarted. Durable sleep survival requires `--redis-uri` pointing at a persistent Redis. DBOS's kill-restart test has not yet been run but its journal lives entirely in Postgres (notifications, workflow_status, scheduled timers all SQL-backed), so the architecture has no equivalent gap — flagged as next verification.
+
+**Kestra entered the roster at ~65/100** — ties Windmill on weighted score and sits firmly in the "declarative DSL, excellent ops tooling, wrong authoring medium for a TS team" tier. Individual Kestra wins (best-in-class UI timeline, 1000+ plugins, Apache 2.0, deepest ecosystem after Airflow among open-source) don't offset the core friction for this team: YAML + Pebble + onResume + env-var-only secrets + HTTP 2xx-means-SUCCESS is four mental models and one real footgun. Pragmatic scorecard: solid ops platform, not a TS-developer-happy durable workflow library.
 
 **Trade-offs for runners-up:**
-- **Inngest** — trade DBOS's native workflow-ID idempotency for a larger ecosystem and a richer local dev UI; CEL idempotency and `waitForEvent({if:})` have subtle footguns DBOS sidesteps.
 - **Vercel Workflow** — trade portability and ecosystem maturity for the most elegant authoring experience; only compelling if you're a Next.js-on-Vercel shop.
 - **Restate** — trade DBOS's MIT license for a bundled dashboard and richer built-in step observability; BSL 1.1 is a real hesitation factor.
 - **Hatchet** — trade DX polish for the most transparent open-source engine; fewer high-level primitives (no native idempotency, token rotation friction).
 - **Windmill** — trade code-first authoring for best-in-class observability + structural fit; OpenFlow JSON DSL and no local edit-run loop are real drags for TypeScript developers.
+- **Kestra** — same family as Windmill (YAML DSL + strong UI) but with broader plugin ecosystem; HTTP-2xx-is-SUCCESS makes it risky for API-driven flows without defensive parsing on every call.
 
-**Surprises:** DBOS's TSv3 function-based API is more ergonomic than the decorator version pre-2025 tutorials show. `npx dbos postgres start` is the smoothest local-Postgres-in-Docker experience on the roster. No surprises on reliability — durability behaved as advertised.
+**Surprises:** (1) Inngest's default self-host persists history but not in-flight timers — SQLite alone is not enough. (2) Kestra's HTTP Request task silently passed a Slack `{"ok":false,"error":"channel_not_found"}` 200 response as SUCCESS. (3) Kestra variables are not recursively evaluated — stashing `{{ secret('X') }}` in a `vars:` entry and referencing `{{ vars.slackChannel }}` inserts the literal template string, not the resolved secret.
 
-**Agent-tooling signal:** DBOS has no Claude skill in this harness; the build was driven by four `WebFetch` calls against `docs.dbos.dev`, and build time (~4 min) was competitive with skill-backed platforms. When docs are accurate and map 1:1 to the installed SDK version, skills are nice-to-have, not load-bearing. Inngest's skill earned its keep mainly because it covered API-version drift — a different problem.
+**Agent-tooling signal:** Kestra has no Claude skill; build was driven by WebFetch + WebSearch. The ~18-minute install time was dominated by container boot waits (plugin scan takes ~30s) and one iteration after hitting the Pebble variable-nesting gotcha — not by agent friction. DBOS's earlier finding holds: accurate, version-matched docs make skills nice-to-have, not load-bearing.
 
 ---
 
@@ -33,23 +35,23 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 
 **Best-guess aggregate judgment across all runs to date.** Update whenever new evidence shifts the picture. See the `Run log` below for the evidence.
 
-| | Vercel Workflow | Inngest | Restate | Windmill | Hatchet | Trigger.dev | DBOS |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Runs informing score** | 1 | 2 | 1 | 1 | 1 | 1 (boot failed) | 1 |
-| **Workflows covered** | lead-lifecycle | reddit-ai-norwegian, lead-lifecycle | hn-digest | hn-digest | reddit-ai-norwegian | hn-digest | lead-lifecycle |
-| **Typical build time (min)** | ~4 (incl. install) | ~4–11 | ~3.5 | ~40 | ~4 | ~5 (no boot) | ~4 (incl. install) |
-| **Typical execution time (sec)** | ~26 w/durable waits | ~9 simple · ~36 w/durable waits | ~60+ (rate-limit) | ~70 | ~6 | — | ~31 w/durable waits |
-| **Developer experience** | 5 | 4 | 4 | 2 | 3 | 3 | 4 |
-| **Reliability** | 4 | 4 | 5 | 5 | 3 | ? | 5 |
-| **Built for this** | 5 | 5 | 4 | 5 | 4 | 3 | 4 |
-| **Visibility** | 4 | 4 | 5 | 5 | 4 | ? | 3 |
-| **Operational overhead** | 5 | 5 | 3 | 2 | 3 | 5 | 4 |
-| **Hosting / portability** | 2 | 4 | 4 | 4 | 4 | 2 | 5 |
-| **Ecosystem maturity** | 2 | 4 | 3 | 4 | 3 | 4 | 3 |
-| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 3 | 2 | 3 |
-| **Licensing & lock-in** | 3 | 4 | 2 | 3 | 5 | 2 | 5 |
-| **Synthesized total** | **33/45** | **37/45** | **33/45** | **34/45** | **32/45** | **~23/45** | **36/45** |
-| **Weighted (30/25/15/15/10/5)** | **80/100** | **~82/100** | **~77/100** | **~68/100** | **~70/100** | — | **~82/100** |
+| | Vercel Workflow | Inngest | Restate | Windmill | Hatchet | Trigger.dev | DBOS | Kestra |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Runs informing score** | 1 | 2 + crash-test | 1 | 1 | 1 | 1 (boot failed) | 1 | 1 |
+| **Workflows covered** | lead-lifecycle | reddit-ai-norwegian, lead-lifecycle | hn-digest | hn-digest | reddit-ai-norwegian | hn-digest | lead-lifecycle | lead-lifecycle |
+| **Typical build time (min)** | ~4 (incl. install) | ~4–11 | ~3.5 | ~40 | ~4 | ~5 (no boot) | ~4 (incl. install) | ~18 (incl. install) |
+| **Typical execution time (sec)** | ~26 w/durable waits | ~9 simple · ~36 w/durable waits | ~60+ (rate-limit) | ~70 | ~6 | — | ~31 w/durable waits | ~40 w/durable waits |
+| **Developer experience** | 5 | 4 | 4 | 2 | 3 | 3 | 4 | 2 |
+| **Reliability** | 4 | 3 (verified) | 5 | 5 | 3 | ? | 5 | 3 |
+| **Built for this** | 5 | 5 | 4 | 5 | 4 | 3 | 4 | 4 |
+| **Visibility** | 4 | 4 | 5 | 5 | 4 | ? | 3 | 5 |
+| **Operational overhead** | 5 | 5 | 3 | 2 | 3 | 5 | 4 | 3 |
+| **Hosting / portability** | 2 | 4 | 4 | 4 | 4 | 2 | 5 | 5 |
+| **Ecosystem maturity** | 2 | 4 | 3 | 4 | 3 | 4 | 3 | 4 |
+| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 3 | 2 | 3 | 3 |
+| **Licensing & lock-in** | 3 | 4 | 2 | 3 | 5 | 2 | 5 | 4 |
+| **Synthesized total** | **33/45** | **36/45** | **33/45** | **34/45** | **32/45** | **~23/45** | **36/45** | **33/45** |
+| **Weighted (30/25/15/15/10/5)** | **80/100** | **~77/100** | **~77/100** | **~68/100** | **~70/100** | — | **~82/100** | **~65/100** |
 
 **Score notes:**
 - **Inngest DX (4)** — started at 5 after the straightforward Reddit digest (2026-04-22); dropped to 4 after lead-lifecycle (2026-04-23) surfaced no-hot-reload + silent `waitForEvent` match-failure footguns.
@@ -70,12 +72,42 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 - **DBOS Visibility (3)** — no bundled local dashboard (Restate and Windmill both ship one). `DBOS.retrieveWorkflow(id).getStatus()` + SQL queries against `dbos_system.workflow_status` / `operation_outputs` / `notifications` are the observability surface. Paid Conductor SaaS provides a hosted UI; self-hosted teams roll their own or query SQL.
 - **DBOS Licensing (5)** — MIT runtime, free self-host forever, no SaaS requirement. Matches Hatchet as cleanest license + lock-in combo on the roster.
 - **DBOS Ecosystem (3)** — credible (Stonebraker/Madden lineage, Series A 2024), but a 40+ dev team adopting DBOS in 2026 is an early adopter. Hiring for "DBOS experience" is a 2027+ bet; TSv3 API (function-based, no decorators) only landed in 2025, so older tutorials actively mislead.
+- **Inngest Reliability (4 → 3, verified)** — manual kill-during-durable-sleep test on 2026-04-23 showed `inngest-cli dev --persist` (SQLite + embedded in-memory Redis) does NOT survive a process restart. SQLite retained run history, but the in-memory Redis lost scheduled wake-ups and `waitForEvent` subscriptions — the paused run stayed `Running` indefinitely and events sent after restart were orphaned. Fresh triggers also hung until the worker restarted too. Full crash-safe self-host requires `--redis-uri` pointing at a persistent Redis. Architecture-claimed reliability is higher; verified reliability under the LOCAL-ONLY bench constraint is 3.
+- **Kestra DX (2)** — four mental models to learn: YAML structure, Pebble templates with non-recursive `vars` evaluation, onResume form-field conventions, and base64-encoded `SECRET_*` env vars (no API in OSS). Declarative fit is worse than Windmill for a TS team because the gotchas compound.
+- **Kestra Reliability (3)** — per-task `retry:` is clean; idempotency is not native (no workflow-ID or business-key dedupe, only concurrency limits). HTTP Request task treats any 2xx response as SUCCESS — a Slack `{"ok":false,"error":"channel_not_found"}` in a 200 response silently passed undetected. Crash-replay architecture via SQL journal is sound but not verified.
+- **Kestra Visibility (5)** — UI timeline, per-task input/output inspection, label-based execution search, logs tab. Ties Restate and Windmill for best-in-class observability on the roster.
+- **Kestra Ecosystem (4)** — 18k+ GitHub stars, 1000+ plugins scanned at boot, ~4 years in production, named enterprise references. Strongest OSS ecosystem on this roster after Airflow.
+- **Kestra Hosting (5)** — Apache 2.0 OSS, single-container for dev + Postgres Compose + Helm chart for k8s, no cloud dependency. Enterprise tier adds RBAC, SSO, git sync, secrets API — real upgrade pressure at 40+ devs but OSS runs production fine.
 
 ---
 
 ## Run log
 
 Chronological log of every bench run. Append new entries; never remove old ones.
+
+### Inngest durability crash-test (2026-04-23, ad-hoc)
+
+Follow-up to the question: "if Inngest has no DB, where does the data go on a power outage?" Switched from `inngest-cli dev` (pure in-memory) to `inngest-cli dev --persist` (SQLite at `.inngest/main.db` + embedded in-memory Redis with periodic snapshot backups). Triggered lead-lifecycle happy path, `kill -9`'d the Inngest process at T+3s during `step.sleep("10s")`, outage ~14s, restarted with the same SQLite file.
+
+- ✅ Ack step survived — SQLite retained the completed step output.
+- ✅ Run metadata retained — same `run_id` reported after restart, status `Running`.
+- ❌ Sleep timer lost — scheduled wake-up was in Redis, not in SQLite. Never fired.
+- ❌ `waitForEvent` subscription lost — `lead/decision` and `lead/signed` events received after restart were never matched to the paused run. Run stayed `Running` indefinitely.
+- ❌ Worker routing lost — fresh triggers sent after Inngest restart also hung until the worker process was also restarted. `Successfully registered / modified: false` was misleading; the routing state lived in Redis too.
+- **Takeaway:** `--persist` is history-durability only. Full crash-safe self-host requires `--redis-uri` at a persistent Redis. Under the bench's LOCAL-ONLY constraint, Inngest Reliability drops from 4 (architecture-claimed) to 3 (verified).
+
+### Kestra × lead-lifecycle (2026-04-23, mode I)
+
+B2B lead-lifecycle simulation (ack → 10s Pause → nudge → Pause-w/onResume decision 30s → Switch → parallel fan-out → Pause-w/onResume signed 20s → parallel fan-out w/retry → 15s Pause → NPS). All Slack output to `#workflow-bench`.
+
+- `kestra/kestra:latest` v1.3.14 single-container, H2 SQL journal, 1036 plugins scanned at boot. One Docker container on :4280. Install + flow authoring + two boots (secrets-env-var requirement forced a restart) + one iteration after Pebble gotcha: ~18 min total. End-to-end execution: ~40s (10s + 15s durable waits + two resume round-trips).
+- 181 lines of YAML (flow only). No TypeScript. Authoring medium is YAML + Pebble expressions. Tasks exercised: `io.kestra.plugin.core.http.Request`, `.flow.Pause` (with and without `onResume`), `.flow.Switch`, `.flow.Parallel`, per-task `retry:` block.
+- Happy path reached 12/13 tasks. The final `signedSwitch` evaluated its value correctly (took the "true" branch, all three implementation Slack posts succeeded), but the Switch task itself reported FAILED for an opaque reason, preventing the downstream `nps` task. Flow marked overall FAILED despite ~85% of business work completing.
+- HTTP Request task treats any 2xx response as SUCCESS regardless of payload — Slack's `{"ok":false,"error":"channel_not_found"}` in a 200 passed undetected in the first run (root cause was an unrelated Pebble variable-nesting bug; the HTTP-2xx-is-SUCCESS behavior is the general footgun).
+- Pebble `vars:` entries are not recursively evaluated. `vars.slackChannel: "{{ secret('X') }}"` referenced as `{{ vars.slackChannel }}` inserted the literal template string, not the decoded secret. Inline `secret()` at the use site.
+- OSS secret management is env-var-only: `SECRET_<KEY>=<base64>` on the container. No API. New secret = container restart. Enterprise tier has a secrets API.
+- Basic auth is mandatory since v0.24 with no disable flag. Set via `POST /api/v1/basicAuth` with password policy (8+ chars, upper, lower, number) before the first authenticated call.
+- Weighted total: **~65/100**. Ties Windmill on the declarative-DSL tier. Ecosystem (4) and Visibility (5) are the standouts; DX (2) and lack of native idempotency (Reliability 3) are the drags.
 
 ### DBOS × lead-lifecycle (2026-04-23, mode I)
 
@@ -169,6 +201,7 @@ Things not in the official docs that cost a failed run or forced a workaround. T
 | **Trigger.dev** | Default `npm run dev` requires a cloud credential (`TRIGGER_SECRET_KEY`) even for the self-hosted path — must explicitly configure local server URL before anything runs. Imports must come from `@trigger.dev/sdk/v3`, not `@trigger.dev/sdk` (CJS exports v2). TriggerConfig requires `maxDuration` to be set. |
 | **Vercel Workflow** | `package.json` `"type": "commonjs"` (npm-init default) breaks Next.js route handlers using `import/export` — must be `"type": "module"` or absent. `createHook({ token })` tokens must be deterministic across replays — derive from workflow inputs (`lead-decision-${leadId}-${iteration}`), never from `Date.now()`/random. `Promise.race([hook, sleep])` leaves an "uncommitted operation: sleep" warning on the abandoned branch — benign but noisy. No generic business-key idempotency helper — only `stepId` (external-API) is native; logical dedupe is hand-rolled. |
 | **DBOS** | TSv3 (2025) dropped class decorators in favor of function-based registration — any pre-2025 tutorial showing `@DBOS.workflow()` is misleading for new projects. `DBOS.setConfig()` must be called **before** `DBOS.launch()`. `DBOS.recv<T>(topic, timeoutSeconds)` returns `null` on timeout, not a thrown error — branch on `null` for the timeout handler. No bundled local observability dashboard; use `DBOS.retrieveWorkflow().getStatus()` or SQL against `dbos_system.workflow_status` / `operation_outputs` / `notifications`. `npx dbos postgres start` is the smoothest local-Postgres experience on the roster — one command, no compose file. |
+| **Kestra** | Basic auth is **mandatory since v0.24** with no disable flag; set one-time via `POST /api/v1/basicAuth` with an 8+ char password containing upper+lower+number before any authenticated call. Secrets in OSS are env-var-only (`SECRET_<KEY>=<base64>`) — no API, every new secret needs a container restart. Pebble `vars:` entries are **not recursively evaluated** — stashing `{{ secret('X') }}` in a var and referencing `{{ vars.Y }}` in a body inserts the literal template string; inline `secret()` at the use site. HTTP Request task treats any **2xx response as SUCCESS regardless of payload** — Slack/Stripe-style APIs that return `{"ok":false}` in a 200 body pass undetected. BOOLEAN `onResume` inputs from multipart form fields need an explicit `| string` filter in Switch `value:` expressions to match case keys reliably. Single-container boot is slow (~30s first response) due to the 1036-plugin scan. |
 
 ---
 
@@ -178,6 +211,7 @@ Platforms we benched but ruled out as top-level durable-workflow runtimes for a 
 
 - **XState** (benched 2026-04-23, arxiv-ai-to-slack, 54/100) — state-machine *library*, not a workflow engine. No journal, no crash replay, no dashboard, no durable sleep, no `waitForEvent`, no cron, no idempotency. Zero-infra win is real but for the wrong job. Fine *inside* a durable step, never as the top layer.
 - **Mastra** (benched 2026-04-22, hn-digest, ~60/100) — AI-agent framework, not a durable-workflow runtime. Using it for pipelines leaves agents/memory/RAG unused and forces bolted-on node-cron + a storage adapter for durability. Right tool, wrong job.
+- **pgflow** (dropped 2026-04-23, before build) — Postgres-native DAG executor. No durable sleep, no `waitForEvent`/signals, no conditional branching, no loops, no native idempotency keys on `start_flow`. Cannot model lead-lifecycle (or any HITL/event-driven workflow). Fits pure DAG pipelines only — same shape as a Postgres-backed Airflow-lite. Wrong tool for a general workflow runtime in a 40+ dev team.
 
 ---
 
@@ -185,8 +219,8 @@ Platforms we benched but ruled out as top-level durable-workflow runtimes for a 
 
 Platforms with a `services/<P>/mode.txt` but no `scoring.md`. Aborted builds, not evidence.
 
-- **pgflow** (`services/pgflow/`) — bench started (mode: installation), no build or scoring completed.
+*(none)*
 
 ---
 
-*Latest update: 2026-04-23 (added **DBOS** to active roster after lead-lifecycle run — weighted 82/100, ties Inngest; standout dimensions are Hosting (5) and Licensing (5)).*
+*Latest update: 2026-04-23 (added **Kestra** to active roster at ~65/100 — ties Windmill on the declarative-DSL tier; rescored **Inngest Reliability 4 → 3** based on a kill-during-durable-sleep test showing `dev --persist` does not survive a process restart without external Redis; earlier: dropped **pgflow** before build — DAG-only executor, no sleep/waitForEvent/branching/loops, can't model lead-lifecycle).*
