@@ -1,6 +1,6 @@
 # Workflow Bench — project instructions
 
-This directory is a **benchmark harness** for comparing code-first durable-workflow platforms: Inngest, Mastra, Hatchet, Restate.
+This directory is a **benchmark harness** for comparing code-first durable-workflow platforms: Vercel Workflow, Inngest, Hatchet, Restate, Windmill, Trigger.dev.
 
 **Goal**: Find the best workflow platform for a 40+ developer team that prioritizes DX, reliability, and operational simplicity.
 
@@ -51,11 +51,11 @@ Example: User says "fetch arXiv paper, post to Slack."
 - Each platform runs directly in the main session (no sub-agents) so the user sees all output live. Between platforms the user does `/clear` to get a fresh context.
 - The user is watching. Report progress concisely between platforms — do not dump full rubrics to chat.
 - Do not modify a platform's code to "improve" it between build and score phases. One shot per platform.
-- **COMPARISON.md is cumulative, not per-run.** It is the living summary of everything we have learnt across all workflows and all runs. Every bench run *adds to it* — never wipe prior data. Specifically:
-  - The top scoring table shows **synthesized best-guess scores per platform**, reflecting all runs to date (not just the most recent). Always show all competitors, even those not run this session.
-  - The "Run log" section appends a new entry per run; prior entries are preserved verbatim.
-  - The "Known gotchas" table is append-only; new findings join existing cells (tag with run/date), never overwrite them.
-  - The workflow-tested line is a history of workflows covered, not a replacement of the latest.
+- **COMPARISON.md is cumulative, with a curated active roster.** It is the living summary of what we've learnt, but the top table only shows **active contenders** — platforms still in the running for a 40+ dev team. Specifically:
+  - The top scoring table shows synthesized best-guess scores for active platforms only. Platforms we've ruled out are moved to the `Dropped from roster` section (one-line rationale, no further updates). Do not re-add a dropped platform without explicit user direction.
+  - The "Run log" section appends a new entry per run. Entries for dropped platforms may be removed when dropping them — a one-line summary in `Dropped from roster` is what we keep.
+  - The "Known gotchas" table is active-roster only. Drop a platform's row when dropping the platform.
+  - The workflow-tested line is a history of workflows covered for active platforms.
 
 ## If ORCHESTRATE.md is missing
 
@@ -79,14 +79,6 @@ This ensures the framework gets smarter with each run, reducing friction and eli
 - **Root cause**: both `/bench-next` and `COMPARE_PROMPT.md` aggregated based on `platforms.json` (the active-run queue), not on `services/*/scoring.md` on disk. Any ad-hoc or out-of-band run vanished.
 - **Fix applied**: COMPARE_PROMPT.md and `/bench-next` now treat scoring files on disk as the source of truth and run drift checks for (a) orphan scorings not in COMPARISON.md and (b) `mode.txt` without `scoring.md`. ORCHESTRATE.md requires `.gitkeep` + `git add` at setup.
 - **Takeaway**: never trust a single "list of things to do" file as the summary of what *has been done*. Always cross-check against artifacts on disk.
-
-### XState (2026-04-23)
-- **Not a workflow engine**: xstate is a state-machine library. Evaluate it as "write your own durable-execution substrate" — journal/replay/dashboard/cron all absent. Fine for in-process UI/component state; poor fit as a top-level workflow runtime.
-- **v5 API shape**: `setup({actors}).createMachine(...)` + `fromPromise` for async steps + `createActor(...).start()`. Guards via `guard: ({event,context}) => ...`. Context mutation via `assign`.
-- **Retry as self-transition**: `onError: [{ guard: retriesLeft, target: sameState, reenter: true, actions: increment }, { target: 'failed' }]` works but v5 `assign` typings fight you when stashing a counter in context — `as any` pragmatically unblocks.
-- **Idempotency is hand-rolled**: no built-in primitive. JSON file works for cron-rate triggers but has TOCTOU between check and commit — not safe under concurrency.
-- **Zero infra win is real**: one Node process, no Docker, no DB. Smallest local footprint of any platform benchmarked. If a workflow truly doesn't need durability, the trade is live; otherwise it's a trap.
-- **Stately Studio is cloud-only**: don't count it as local observability.
 
 ### Inngest (2026-04-23)
 - **Port config**: npm script `dev:inngest` must match app server port (was hardcoded to 3003, updated to 4200). Update any new scripts to use env var or ask user upfront.

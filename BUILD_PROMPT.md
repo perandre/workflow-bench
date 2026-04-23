@@ -29,7 +29,9 @@ Run entirely locally. Do not connect to the vendor's cloud.
 - **Inngest**: use `npx inngest-cli@latest dev`. No cloud event key.
 - **Hatchet**: `hatchet server start` (Docker-based local engine). No Hatchet Cloud.
 - **Restate**: `docker run restatedev/restate`. No Restate Cloud.
-- **Mastra**: local only; no cloud account.
+- **Vercel Workflow**: local `next dev`; no Vercel account required for build/bench.
+- **Windmill**: local Docker Compose; no Windmill Cloud.
+- **Trigger.dev**: local Docker Compose self-host; no Trigger Cloud (default `npm run dev` still requires `TRIGGER_SECRET_KEY` — see gotchas).
 
 ## Requirements
 

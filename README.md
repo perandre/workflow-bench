@@ -1,6 +1,6 @@
 # Workflow Bench
 
-Benchmark durable workflow platforms (Inngest, Hatchet, Restate, Mastra, Windmill) on a real workflow — side by side, self-hosted, open source only.
+Benchmark durable workflow platforms (Vercel Workflow, Inngest, Hatchet, Restate, Windmill, Trigger.dev) on a real workflow — side by side, self-hosted, open source only.
 
 Runs entirely inside Claude Code. No web UI.
 

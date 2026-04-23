@@ -11,7 +11,7 @@ Run one platform at a time directly in this session — no sub-agents. Between p
 ### Step 1 — Platforms + mode (one call, two questions)
 
 ```
-Q1 multiSelect: "Which platforms?" — inngest, hatchet, restate, windmill (+ Other for mastra)
+Q1 multiSelect: "Which platforms?" — vercel-workflow, inngest, hatchet, restate, windmill, trigger-dev
 Q2 single:      "Which mode?"      — "Flow only" / "Installation included"
 ```
 
@@ -50,10 +50,12 @@ One line in chat: "Ready. Benchmarking: [list]. Workflow: [name]. Starting [firs
 
 | Platform | Skills |
 |---|---|
+| vercel-workflow | `vercel:workflow` skill (if listed in available-skills panel) + bundled docs in `node_modules/workflow/docs/` |
 | inngest | `inngest-skills:*` (if listed in available-skills panel) |
 | hatchet | Read `~/Sites/workflow-bench/skills/hatchet-cli/SKILL.md` + relevant `references/` files |
-| mastra | No skill — use https://mastra.ai/docs |
 | restate | No skill — use `@restatedev/restate-sdk` docs |
+| windmill | No skill — use `wmill.getVariable()` + `/api/openapi.json` on live instance |
+| trigger-dev | No skill — ensure imports come from `@trigger.dev/sdk/v3` |
 
 ---
 
