@@ -1,85 +1,77 @@
 # Workflow Bench
 
-Compare durable workflow platforms (Inngest, Mastra, Hatchet, Restate) on a real workflow — your own use case or the built-in demo.
+Benchmark durable workflow platforms (Inngest, Hatchet, Restate, Mastra, Windmill) on a real workflow — side by side, self-hosted, open source only.
+
+Runs entirely inside Claude Code. No web UI.
+
+---
 
 ## Quickstart
 
 ```bash
-cd web
-npm install     # first time only
-npm run dev
+cp shared-secrets.env.template shared-secrets.env   # fill in API keys
+claude                                               # open Claude Code in this dir
 ```
 
-Open **http://localhost:3000** in your browser.
-
-That's it. No terminal interview, no config files to edit.
-
----
-
-## How it works
-
-1. **Pick platforms** — check which ones you want to benchmark (all four, or a subset)
-2. **Pick a workflow** — use the built-in Daily HN AI Digest, or describe your own use case
-3. **Click Run** — the site writes the config and kicks off Claude Code in the background
-4. **Watch live** — each platform shows a step checklist and live log stream as it builds and tests
-5. **See results** — score cards and a side-by-side comparison table when everything finishes
-
----
-
-## What gets tested
-
-Each platform is scored on:
-
-- **Build** — did it scaffold and run without errors?
-- **Runtime** — did the workflow trigger, execute all steps, and succeed end-to-end?
-- **Failure handling** — does it retry and resume correctly after a failure?
-- **Idempotency** — does running it twice produce duplicate side effects?
-- **Dashboard** — how useful is the local dev UI for debugging?
-- **Infra footprint** — how many services? How much RAM?
-
-Results land in `services/<platform>/scoring.md`. The comparison goes to `summary.md`.
-
----
-
-## Custom workflows
-
-When you pick "Custom workflow", describe what you want to solve — a customer scenario, an integration flow, whatever. A few hints:
-
-- **Slack integration is available** — there's already a bot token configured. Ask Per André if you need to use a different channel.
-- Mention what APIs the workflow calls (HTTP endpoints, databases, etc.)
-- Describe what a successful run looks like so the scoring agent knows what to verify
-
----
-
-## Platforms run sequentially
-
-Each platform builds, runs, and tears down before the next one starts. This avoids port conflicts and gives accurate wall-clock timing. Expect 30–60 minutes per platform.
-
-Between platforms the scoring agent will do `/clear` to reset context — this is normal and expected.
-
----
-
-## File layout
+Then at the Claude prompt, type:
 
 ```
-workflow-bench/
-  web/                   ← the Next.js web app (start here)
-  services/<platform>/    ← build output + scores per platform
-  workflow.md            ← the workflow spec for the current run
-  platforms.json         ← which platforms to benchmark
-  workflow-default.md    ← the built-in HN digest spec
-  ORCHESTRATE.md         ← instructions Claude Code follows
-  BUILD_PROMPT.md        ← build instructions per platform
-  SCORE_PROMPT.md        ← scoring instructions per platform
-  COMPARE_PROMPT.md      ← final comparison aggregation
-  shared-secrets.env     ← API keys (not committed)
+start the bench
 ```
+
+Claude will:
+1. Suggest enhancements to your workflow (or use one from `workflows/`).
+2. Ask which platforms to run and whether to include install time.
+3. Build, run, score, and compare each platform sequentially.
+
+When Claude says to `/clear` between platforms — do it. That's how fresh context is kept.
 
 ---
 
 ## Requirements
 
-- Node 18+ and npm
-- Docker (for Hatchet and Restate)
-- `claude` CLI installed and authenticated (`claude --version` should work)
-- API keys in `shared-secrets.env` (copy from the team vault)
+- macOS or Linux, Node 18+, npm
+- Docker (for Hatchet, Restate, Windmill)
+- [`claude`](https://docs.claude.com/claude-code) CLI installed and authenticated
+- API keys filled into `shared-secrets.env` (see template)
+
+---
+
+## Pick a workflow
+
+Either:
+- Choose one from `workflows/` (arXiv → Slack, HN digest, lead lifecycle, reddit) — name it when asked, or
+- Describe your own in plain English. Claude proposes enhancements before building.
+
+Slack output goes to `#workflow-bench`. The bot token slot is in the secrets template.
+
+---
+
+## What you get out
+
+- `services/<platform>/` — generated code, logs, and `scoring.md` per platform
+- `COMPARISON.md` — cumulative scoreboard across every run (7 dimensions, DX included)
+- `summary.md` — narrative synthesis of the latest run
+
+---
+
+## Key files
+
+| File | Purpose |
+|---|---|
+| `ORCHESTRATE.md` | Master plan Claude follows each run |
+| `BUILD_PROMPT.md` | Per-platform build instructions |
+| `SCORE_PROMPT.md` | Per-platform scoring rubric |
+| `COMPARE_PROMPT.md` | Final aggregation step |
+| `COMPARISON.md` | Living scoreboard (cumulative) |
+| `workflows/` | Reusable workflow specs |
+| `workflow.md` | Active workflow for the current run |
+| `platforms.json` | Platforms selected for the current run |
+
+---
+
+## Notes
+
+- Platforms run sequentially to avoid port conflicts and give accurate wall-clock timing. Expect 30–60 min per platform.
+- `COMPARISON.md` is append-only — new runs add to it, prior data is never wiped.
+- Only self-hosted open-source versions are benchmarked. No vendor cloud.
