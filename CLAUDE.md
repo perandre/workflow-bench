@@ -49,6 +49,11 @@ Example: User says "fetch arXiv paper, post to Slack."
 - Each platform runs directly in the main session (no sub-agents) so the user sees all output live. Between platforms the user does `/clear` to get a fresh context.
 - The user is watching. Report progress concisely between platforms — do not dump full rubrics to chat.
 - Do not modify a platform's code to "improve" it between build and score phases. One shot per platform.
+- **COMPARISON.md is cumulative, not per-run.** It is the living summary of everything we have learnt across all workflows and all runs. Every bench run *adds to it* — never wipe prior data. Specifically:
+  - The top scoring table shows **synthesized best-guess scores per platform**, reflecting all runs to date (not just the most recent). Always show all competitors, even those not run this session.
+  - The "Run log" section appends a new entry per run; prior entries are preserved verbatim.
+  - The "Known gotchas" table is append-only; new findings join existing cells (tag with run/date), never overwrite them.
+  - The workflow-tested line is a history of workflows covered, not a replacement of the latest.
 
 ## If ORCHESTRATE.md is missing
 
