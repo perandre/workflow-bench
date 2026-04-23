@@ -23,7 +23,9 @@ If `shared-secrets.env` is missing, tell the user to run `cp shared-secrets.env.
 
 ## 2. Workflow
 
-Check `workflow.md`. If it exists and looks intact, show the user its first ~10 lines and ask (plain text, one question) whether to use it or pick/describe a new one. If new, offer the `workflows/` library as options plus "describe a new one".
+Check `workflow.md`. If it exists and looks intact, show the user its first ~10 lines and use `AskUserQuestion` to ask whether to use it or pick/describe a new one. If new, use `AskUserQuestion` to offer the `workflows/` library as options plus "describe a new one".
+
+All user prompts in this flow MUST use the `AskUserQuestion` tool — never plain-text questions.
 
 When the user describes a new workflow, follow the **Workflow enhancement protocol** in `CLAUDE.md` — suggest 1–3 enhancements that expose platform differences, agree on what "good results" looks like, then save to `workflow.md` and also copy to `workflows/<slug>.md`.
 
