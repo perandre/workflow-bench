@@ -10,20 +10,20 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 
 **Best-guess aggregate judgment across all runs to date.** Update whenever new evidence shifts the picture. See the `Run log` below for the evidence.
 
-| | Inngest | Hatchet | Restate | Windmill | Mastra | Trigger.dev |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Runs informing score** | 2 | 1 | 1 | 1 | 1 | 1 (boot failed) |
-| **Workflows covered** | reddit-ai-norwegian, lead-lifecycle | reddit-ai-norwegian | hn-digest | hn-digest | hn-digest | hn-digest |
-| **Typical build time (min)** | ~4–11 | ~4 | ~3.5 | ~40 | ~15 | ~5 (no boot) |
-| **Typical execution time (sec)** | ~9 simple · ~36 w/durable waits | ~6 | ~60+ (rate-limit) | ~70 | ~60 | — |
-| **Developer experience** | 4 | 3 | 4 | 2 | 3 | 3 |
-| **Reliability** | 4 | 3 | 5 | 5 | 2 | ? |
-| **Built for this** | 5 | 4 | 4 | 5 | 2 | 3 |
-| **Visibility** | 4 | 4 | 5 | 5 | 3 | ? |
-| **Operational overhead** | 5 | 3 | 3 | 2 | 5 | 5 |
-| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 2 | 2 |
-| **Licensing & lock-in** | 4 | 5 | 2 | 3 | 4 | 2 |
-| **Synthesized total** | **29/35** | **25/35** | **26/35** | **26/35** | **21/35** | **~17/35** |
+| | Inngest | Hatchet | Restate | Windmill | Mastra | Trigger.dev | XState |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Runs informing score** | 2 | 1 | 1 | 1 | 1 | 1 (boot failed) | 1 |
+| **Workflows covered** | reddit-ai-norwegian, lead-lifecycle | reddit-ai-norwegian | hn-digest | hn-digest | hn-digest | hn-digest | arxiv-ai-to-slack |
+| **Typical build time (min)** | ~4–11 | ~4 | ~3.5 | ~40 | ~15 | ~5 (no boot) | ~1.4 |
+| **Typical execution time (sec)** | ~9 simple · ~36 w/durable waits | ~6 | ~60+ (rate-limit) | ~70 | ~60 | — | ~0.8 |
+| **Developer experience** | 4 | 3 | 4 | 2 | 3 | 3 | 2 |
+| **Reliability** | 4 | 3 | 5 | 5 | 2 | ? | 2 |
+| **Built for this** | 5 | 4 | 4 | 5 | 2 | 3 | 1 |
+| **Visibility** | 4 | 4 | 5 | 5 | 3 | ? | 1 |
+| **Operational overhead** | 5 | 3 | 3 | 2 | 5 | 5 | 5 |
+| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 2 | 2 | 2 |
+| **Licensing & lock-in** | 4 | 5 | 2 | 3 | 4 | 2 | 5 |
+| **Synthesized total** | **29/35** | **25/35** | **26/35** | **26/35** | **21/35** | **~17/35** | **18/35** |
 
 **Score notes:**
 - **Inngest DX (4)** — started at 5 after the straightforward Reddit digest (2026-04-22); dropped to 4 after lead-lifecycle (2026-04-23) surfaced no-hot-reload + silent `waitForEvent` match-failure footguns.
@@ -35,12 +35,26 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 - **Mastra Built-for-this (2)** — Mastra is an **AI-agent** framework; using it for pure data-pipeline workflows leaves its differentiators (agents, memory, tool registry, RAG) untouched and forces you to bolt on node-cron and a durability adapter. Right platform, wrong job.
 - **Trigger.dev Reliability / Visibility (?)** — worker never connected in the only attempt (missing `TRIGGER_SECRET_KEY` — cloud credential required even for the "dev" path). All runtime dimensions are unverified.
 - **Trigger.dev Licensing (2)** — code is Apache 2.0, but default path requires cloud account and the task config in the built code points at `proj_hndigest` on cloud.trigger.dev. Self-host Docker Compose exists but was not exercised.
+- **XState Built-for-this (1) / Reliability (2) / Visibility (1)** — xstate is a state-machine *library*, not a durable-execution engine. No journal, no crash replay, no dashboard, no scheduling, no event waiting. Everything the other platforms give you for free (retries, idempotency, observability) is hand-rolled here. Happy-path runs are fine and cheap; any crash mid-flight is data loss.
+- **XState Operational (5) / Licensing (5)** — smallest footprint on the roster (one Node process, no Docker, no DB), MIT licensed, zero vendor dependency. Genuine strengths, just for the wrong job.
 
 ---
 
 ## Run log
 
 Chronological log of every bench run. Append new entries; never remove old ones.
+
+### XState × arxiv-ai-to-slack (2026-04-23, mode I)
+
+Single-step pipeline: fetch latest arXiv cs.AI paper → post to Slack `#workflow-bench`. Idempotent on UTC date via local JSON file.
+
+- Install + build + verified run: 1.43 min total. End-to-end execution: ~0.8s. Smallest infra of the entire roster — one Node process on :4300, no Docker, no DB.
+- `xstate@5.19.0` with `setup()` + `fromPromise` actors, one state per step (`checkIdempotency` → `fetching` → `posting` → `committing` → `done|skipped|failed`).
+- Idempotency: pure application-level (`.idempotency.json`). Second trigger same UTC date returned `{"status":"skipped",...}` with the original Slack ts. No atomic guard — TOCTOU window between check and commit.
+- Retries: expressed as an `onError` self-transition with a counter smuggled through context (needed `as any` to typecheck in v5). Works but inelegant vs `retries: 3` on a step.
+- No durability: if the process crashes between `fetching` and `committing`, the paper is fetched, possibly posted, and the idempotency key is unwritten — next trigger re-runs. This is the defining limitation; no journal, no replay.
+- No local dashboard (Stately Studio is cloud-only). Observability = whatever you `console.log`.
+- Total 54/100 on the new 40%/30%/20%/10% DX/Reliability/Ops/Cost weighting. Verdict: right tool for in-process UI state machines, wrong tool as a top-level durable workflow runtime for a 40-dev team.
 
 ### Inngest × lead-lifecycle (2026-04-23, mode F)
 

@@ -74,6 +74,14 @@ This ensures the framework gets smarter with each run, reducing friction and eli
 
 ## Learnings from benchmarks
 
+### XState (2026-04-23)
+- **Not a workflow engine**: xstate is a state-machine library. Evaluate it as "write your own durable-execution substrate" — journal/replay/dashboard/cron all absent. Fine for in-process UI/component state; poor fit as a top-level workflow runtime.
+- **v5 API shape**: `setup({actors}).createMachine(...)` + `fromPromise` for async steps + `createActor(...).start()`. Guards via `guard: ({event,context}) => ...`. Context mutation via `assign`.
+- **Retry as self-transition**: `onError: [{ guard: retriesLeft, target: sameState, reenter: true, actions: increment }, { target: 'failed' }]` works but v5 `assign` typings fight you when stashing a counter in context — `as any` pragmatically unblocks.
+- **Idempotency is hand-rolled**: no built-in primitive. JSON file works for cron-rate triggers but has TOCTOU between check and commit — not safe under concurrency.
+- **Zero infra win is real**: one Node process, no Docker, no DB. Smallest local footprint of any platform benchmarked. If a workflow truly doesn't need durability, the trade is live; otherwise it's a trap.
+- **Stately Studio is cloud-only**: don't count it as local observability.
+
 ### Inngest (2026-04-23)
 - **Port config**: npm script `dev:inngest` must match app server port (was hardcoded to 3003, updated to 4200). Update any new scripts to use env var or ask user upfront.
 - **Idempotency in dev**: Inngest's in-memory DB doesn't persist idempotency state across restarts. CEL expressions work within a session, but second trigger behavior is unclear (initiated new run but appeared to hang). Document this gotcha.
