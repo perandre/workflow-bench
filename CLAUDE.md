@@ -6,7 +6,9 @@ This directory is a **benchmark harness** for comparing code-first durable-workf
 
 ## Start here
 
-If the user says anything like "start the bench", "run it", "go", or suggests a workflow: **propose workflow enhancements first**. When they have a workflow in mind, you should:
+Canonical entry is the `/bench` slash command (`.claude/commands/bench.md`); `/bench-next` resumes after `/clear`. If the user types natural language ("start the bench", "run it", "go") or proposes a workflow, treat it as `/bench` and follow the same flow.
+
+When they have a workflow in mind, you should:
 
 1. **Suggest improvements** to make it more revealing of platform differences (e.g., add error paths, parallel steps, checkpoints—whatever exposes real-world friction).
 2. **Know what good looks like**: Identify upfront what metrics matter for THIS workflow (e.g., error recovery speed, parallel efficiency, observability).

@@ -13,18 +13,21 @@ cp shared-secrets.env.template shared-secrets.env   # fill in API keys
 claude                                               # open Claude Code in this dir
 ```
 
-Then at the Claude prompt, type:
+Then at the Claude prompt:
 
 ```
-start the bench
+/bench
 ```
 
-Claude will:
-1. Suggest enhancements to your workflow (or use one from `workflows/`).
-2. Ask which platforms to run and whether to include install time.
-3. Build, run, score, and compare each platform sequentially.
+Claude will preflight (secrets, Docker, Node), confirm the workflow, ask which platforms to run, then build + score each one sequentially.
 
-When Claude says to `/clear` between platforms — do it. That's how fresh context is kept.
+Between platforms Claude will tell you to `/clear`. After clearing, run:
+
+```
+/bench-next
+```
+
+to pick up where you left off. Repeat until all platforms are scored and a `summary.md` is produced.
 
 ---
 
