@@ -74,6 +74,12 @@ This ensures the framework gets smarter with each run, reducing friction and eli
 
 ## Learnings from benchmarks
 
+### Framework bug — drift between `platforms.json` and scoring files (2026-04-23)
+- **Symptom**: vercel-workflow was benched (scoring.md exists, 89/100 — highest on the roster) but never appeared in COMPARISON.md for an entire run cycle. `services/dbos/` and `services/pgflow/` also had `mode.txt` but no scoring, silently ignored.
+- **Root cause**: both `/bench-next` and `COMPARE_PROMPT.md` aggregated based on `platforms.json` (the active-run queue), not on `services/*/scoring.md` on disk. Any ad-hoc or out-of-band run vanished.
+- **Fix applied**: COMPARE_PROMPT.md and `/bench-next` now treat scoring files on disk as the source of truth and run drift checks for (a) orphan scorings not in COMPARISON.md and (b) `mode.txt` without `scoring.md`. ORCHESTRATE.md requires `.gitkeep` + `git add` at setup.
+- **Takeaway**: never trust a single "list of things to do" file as the summary of what *has been done*. Always cross-check against artifacts on disk.
+
 ### XState (2026-04-23)
 - **Not a workflow engine**: xstate is a state-machine library. Evaluate it as "write your own durable-execution substrate" — journal/replay/dashboard/cron all absent. Fine for in-process UI/component state; poor fit as a top-level workflow runtime.
 - **v5 API shape**: `setup({actors}).createMachine(...)` + `fromPromise` for async steps + `createActor(...).start()`. Guards via `guard: ({event,context}) => ...`. Context mutation via `assign`.

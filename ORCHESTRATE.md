@@ -15,7 +15,7 @@ Q1 multiSelect: "Which platforms?" — inngest, hatchet, restate, windmill (+ Ot
 Q2 single:      "Which mode?"      — "Flow only" / "Installation included"
 ```
 
-Write `platforms.json` with selected slugs. Write `services/<P>/mode.txt` for each platform.
+Write `platforms.json` with selected slugs. For each platform also write `services/<P>/mode.txt` **and** `touch services/<P>/.gitkeep` + `git add services/<P>/.gitkeep` — the `.gitkeep` is the roster-membership signal required by `CLAUDE.md`. Without it, the platform can be scored without ever entering the cumulative table.
 
 **Timer rules:**
 - **Flow only**: start timer (`date +%s > .bench-start-ts`) before first line of flow code. Log `buildMinutes`, `executionMinutes`. Set `installMinutes: null`.
@@ -96,3 +96,28 @@ One paragraph in chat: platform, build time, boot y/n, run outcome, one standout
 ## After all platforms
 
 Read all `scoring.md` files, synthesize `summary.md` per `COMPARE_PROMPT.md`. Give user a ranked recommendation in chat.
+
+## Drift checks (run at end of every bench and at start of `/bench-next`)
+
+These exist because `platforms.json` is not the source of truth — scoring files are. Without these, ad-hoc runs silently disappear from `COMPARISON.md`.
+
+```bash
+# Orphan scorings: scored but missing from COMPARISON.md
+# Normalises slug by stripping '-' and '.' so e.g. `trigger-dev` matches `Trigger.dev`
+# and `windmill.dev` matches `Windmill`.
+doc=$(tr -d ' .-' < COMPARISON.md)
+for d in services/*/scoring.md; do
+  p=$(basename $(dirname "$d"))
+  slug=$(echo "$p" | tr -d ' .-')
+  echo "$doc" | grep -qi "$slug" || \
+    echo "ORPHAN: $p scored but not in COMPARISON.md — backfill its column"
+done
+
+# Incomplete runs: mode.txt without scoring.md
+for d in services/*/mode.txt; do
+  p=$(basename $(dirname "$d"))
+  [ -f "services/$p/scoring.md" ] || echo "INCOMPLETE: $p — list under 'Incomplete runs' in COMPARISON.md"
+done
+```
+
+Surface findings to the user and backfill before declaring the bench done.

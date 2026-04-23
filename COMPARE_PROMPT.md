@@ -6,9 +6,16 @@ You are aggregating completed benchmark rubrics into a ranked comparison.
 
 ## Inputs
 
-Read `~/Sites/workflow-bench/platforms.json` to get the list of platforms that were benchmarked this run. For each platform `<P>`, read `services/<P>/scoring.md`.
+**Source of truth = scoring files on disk, not `platforms.json`.** `platforms.json` is only the active-run queue; it can diverge from reality (ad-hoc runs, orphan results, aborted runs). Relying on it has caused real drift — vercel-workflow was benched outside `platforms.json` and went missing from COMPARISON.md for an entire run cycle.
 
-Also read `~/Sites/workflow-bench/workflow.md` — the recommendation should be framed in terms of the workflow that was actually tested.
+Collect inputs as follows:
+
+1. `ls ~/Sites/workflow-bench/services/*/scoring.md` — every platform that has been scored (this run *or* any prior). Read all of them.
+2. `ls ~/Sites/workflow-bench/services/*/mode.txt` — any dir with `mode.txt` but no `scoring.md` is an **incomplete run**. List it under `Incomplete runs` in `COMPARISON.md`; do not score it.
+3. `~/Sites/workflow-bench/platforms.json` — the active-run queue. Use only to distinguish *new this run* from *carried forward*.
+4. `~/Sites/workflow-bench/workflow.md` — the recommendation should be framed in terms of the workflow tested this run.
+
+**Drift check (mandatory)**: for every platform with a `scoring.md`, confirm it has a column in `COMPARISON.md`. If it doesn't, backfill its column before writing `summary.md`. Never run the compare step against `platforms.json` alone.
 
 ## Your job
 

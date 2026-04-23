@@ -10,20 +10,21 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 
 **Best-guess aggregate judgment across all runs to date.** Update whenever new evidence shifts the picture. See the `Run log` below for the evidence.
 
-| | Inngest | Hatchet | Restate | Windmill | Mastra | Trigger.dev | XState |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Runs informing score** | 2 | 1 | 1 | 1 | 1 | 1 (boot failed) | 1 |
-| **Workflows covered** | reddit-ai-norwegian, lead-lifecycle | reddit-ai-norwegian | hn-digest | hn-digest | hn-digest | hn-digest | arxiv-ai-to-slack |
-| **Typical build time (min)** | ~4–11 | ~4 | ~3.5 | ~40 | ~15 | ~5 (no boot) | ~1.4 |
-| **Typical execution time (sec)** | ~9 simple · ~36 w/durable waits | ~6 | ~60+ (rate-limit) | ~70 | ~60 | — | ~0.8 |
-| **Developer experience** | 4 | 3 | 4 | 2 | 3 | 3 | 2 |
-| **Reliability** | 4 | 3 | 5 | 5 | 2 | ? | 2 |
-| **Built for this** | 5 | 4 | 4 | 5 | 2 | 3 | 1 |
-| **Visibility** | 4 | 4 | 5 | 5 | 3 | ? | 1 |
-| **Operational overhead** | 5 | 3 | 3 | 2 | 5 | 5 | 5 |
-| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 2 | 2 | 2 |
-| **Licensing & lock-in** | 4 | 5 | 2 | 3 | 4 | 2 | 5 |
-| **Synthesized total** | **29/35** | **25/35** | **26/35** | **26/35** | **21/35** | **~17/35** | **18/35** |
+| | Vercel Workflow | Inngest | Restate | Windmill | Hatchet | Mastra | XState | Trigger.dev |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Runs informing score** | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 1 (boot failed) |
+| **Workflows covered** | lead-lifecycle | reddit-ai-norwegian, lead-lifecycle | hn-digest | hn-digest | reddit-ai-norwegian | hn-digest | arxiv-ai-to-slack | hn-digest |
+| **Typical build time (min)** | ~4 (incl. install) | ~4–11 | ~3.5 | ~40 | ~4 | ~15 | ~1.4 | ~5 (no boot) |
+| **Typical execution time (sec)** | ~26 w/durable waits | ~9 simple · ~36 w/durable waits | ~60+ (rate-limit) | ~70 | ~6 | ~60 | ~0.8 | — |
+| **Developer experience** | 5 | 4 | 4 | 2 | 3 | 3 | 2 | 3 |
+| **Reliability** | 4 | 4 | 5 | 5 | 3 | 2 | 2 | ? |
+| **Built for this** | 5 | 5 | 4 | 5 | 4 | 2 | 1 | 3 |
+| **Visibility** | 4 | 4 | 5 | 5 | 4 | 3 | 1 | ? |
+| **Operational overhead** | 5 | 5 | 3 | 2 | 3 | 5 | 5 | 5 |
+| **Multi-tenant flexibility** | 3 | 3 | 3 | 4 | 3 | 2 | 2 | 2 |
+| **Licensing & lock-in** | 3 | 4 | 2 | 3 | 5 | 4 | 5 | 2 |
+| **Synthesized total** | **29/35** | **29/35** | **26/35** | **26/35** | **25/35** | **21/35** | **18/35** | **~17/35** |
+| **Weighted (40/30/20/10)** | **89/100** | **~82/100** | **~74/100** | **~74/100** | **~72/100** | **~60/100** | **54/100** | — |
 
 **Score notes:**
 - **Inngest DX (4)** — started at 5 after the straightforward Reddit digest (2026-04-22); dropped to 4 after lead-lifecycle (2026-04-23) surfaced no-hot-reload + silent `waitForEvent` match-failure footguns.
@@ -37,12 +38,28 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 - **Trigger.dev Licensing (2)** — code is Apache 2.0, but default path requires cloud account and the task config in the built code points at `proj_hndigest` on cloud.trigger.dev. Self-host Docker Compose exists but was not exercised.
 - **XState Built-for-this (1) / Reliability (2) / Visibility (1)** — xstate is a state-machine *library*, not a durable-execution engine. No journal, no crash replay, no dashboard, no scheduling, no event waiting. Everything the other platforms give you for free (retries, idempotency, observability) is hand-rolled here. Happy-path runs are fine and cheap; any crash mid-flight is data loss.
 - **XState Operational (5) / Licensing (5)** — smallest footprint on the roster (one Node process, no Docker, no DB), MIT licensed, zero vendor dependency. Genuine strengths, just for the wrong job.
+- **Vercel Workflow DX (5) / Built-for-this (5)** — two directives (`"use workflow"`, `"use step"`), no DSL, no worker class; durable async/await identical in shape to plain Node. Bundled docs in `node_modules/workflow/docs/` can never drift from the installed version.
+- **Vercel Workflow Licensing (3)** — runtime is Apache-2.0 and runs on any Node host, but production polish (dashboard, retry visibility) is best-supported on Vercel Fluid Compute. Self-hosting at scale is a documented "not the happy path."
+- **Vercel Workflow vs Inngest (tie at 29/35, but 89 vs 82 weighted)** — Vercel Workflow wins on the weighted DX/Ops axes by deleting the `inngest-cli dev` process entirely (state lives in `.next/workflow-data/`). Inngest wins on cross-host portability and not coupling you to Next.js.
 
 ---
 
 ## Run log
 
 Chronological log of every bench run. Append new entries; never remove old ones.
+
+### Vercel Workflow × lead-lifecycle (2026-04-23, mode I)
+
+B2B lead-lifecycle simulation (ack → 10s sleep → nudge → hook decision w/30s timeout → conditional fan-out + loop-back → signature hook w/20s timeout → parallel fan-out w/injected 30% failure → 15s delayed follow-up). All Slack output to `#workflow-bench`.
+
+- `workflow@4.2.4` + `@workflow/next@4.0.5` on Next.js 16.2.4. One Next dev process on :4300, no Docker, no DB — state lives in `.next/workflow-data/`.
+- Install + build + verified run: ~4 min total. End-to-end execution: 25.8s (of which ~10s is durable sleep + two hook round-trips).
+- Two directives (`"use workflow"` / `"use step"`) are the entire programming model; async/await code shape is identical to a plain Node script. `Promise.race([hook, sleep("30s")])` for timeouts, `Promise.all([...])` for fan-out, plain `while` loop for max-iterations loop-back — all stdlib JS idioms.
+- Retries native per step; `FatalError` opts out, `RetryableError({retryAfter})` schedules. The injected 30% flake in the invoice step recovered without any config.
+- Idempotency: `stepId` keys are native for external-API dedupe; 24h business-key dedupe (same `leadId`) was hand-rolled via tmpdir JSON file — no generic helper shipped.
+- Observability: `npx workflow web` dashboard + `npx workflow inspect run <id> --json` CLI ship in-box. Structured JSON means scriptable.
+- Gotchas: `package.json "type": "commonjs"` breaks Next.js route handlers (must be `module` or absent). `createHook` tokens must be deterministic across replays — derive from workflow inputs, never `Date.now()` or random. "Uncommitted operation: sleep" warning on abandoned race branches is benign but noisy.
+- Weighted total: **4.47/5 → 89.4/100**. Ties Inngest on the 7-dim synthesized table (29/35) but wins the weighted 40/30/20/10 comparison by deleting the separate dev-CLI process.
 
 ### XState × arxiv-ai-to-slack (2026-04-23, mode I)
 
@@ -129,7 +146,17 @@ Things not in the official docs that cost a failed run or forced a workaround. T
 | **Windmill** | Workers sandbox env vars — secrets must use `wmill.getVariable()`, not `process.env`. API endpoint paths differ from docs; fetch `/api/openapi.json` from the live instance to find correct routes. Cron uses 6-field syntax (seconds first): `0 0 8 * * *`. Git sync for flow-as-code is Enterprise only in full form. |
 | **Mastra** | Bundler runs code from a temp `.mastra/output/` / `src/mastra/public/` dir — `process.cwd()` and `__dirname` are unreliable. Use a `MASTRA_PROJECT_ROOT` env var for any file paths. Step-level retry is `retries: N`, not `retryConfig`. No native cron — node-cron sidecar required. No durability by default — requires a storage adapter (LibSQL/Postgres). PostHog telemetry default-on. |
 | **Trigger.dev** | Default `npm run dev` requires a cloud credential (`TRIGGER_SECRET_KEY`) even for the self-hosted path — must explicitly configure local server URL before anything runs. Imports must come from `@trigger.dev/sdk/v3`, not `@trigger.dev/sdk` (CJS exports v2). TriggerConfig requires `maxDuration` to be set. |
+| **Vercel Workflow** | `package.json` `"type": "commonjs"` (npm-init default) breaks Next.js route handlers using `import/export` — must be `"type": "module"` or absent. `createHook({ token })` tokens must be deterministic across replays — derive from workflow inputs (`lead-decision-${leadId}-${iteration}`), never from `Date.now()`/random. `Promise.race([hook, sleep])` leaves an "uncommitted operation: sleep" warning on the abandoned branch — benign but noisy. No generic business-key idempotency helper — only `stepId` (external-API) is native; logical dedupe is hand-rolled. |
 
 ---
 
-*Latest update: 2026-04-23 (Inngest × lead-lifecycle). This document accumulates across runs — prior data is never removed.*
+## Incomplete runs (do not include in scores)
+
+Platforms with a `services/<P>/mode.txt` but no `scoring.md`. These are aborted builds, not evidence — the framework flags them so they aren't silently omitted.
+
+- **DBOS** (`services/dbos/`) — bench started (mode: installation), no build or scoring completed. Not scored.
+- **pgflow** (`services/pgflow/`) — bench started (mode: installation), no build or scoring completed. Not scored.
+
+---
+
+*Latest update: 2026-04-23 (backfilled Vercel Workflow × lead-lifecycle, flagged DBOS/pgflow as incomplete). This document accumulates across runs — prior data is never removed.*
