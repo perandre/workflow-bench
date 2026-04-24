@@ -52,7 +52,7 @@ One line in chat: "Ready. Benchmarking: [list]. Workflow: [name]. Starting [firs
 |---|---|
 | vercel-workflow | `vercel:workflow` skill (if listed in available-skills panel) + bundled docs in `node_modules/workflow/docs/` |
 | inngest | `inngest-skills:*` (if listed in available-skills panel) |
-| hatchet | Read `~/Sites/workflow-bench/skills/hatchet-cli/SKILL.md` + relevant `references/` files |
+| hatchet | No skill — use `hatchet-docs` MCP or `@hatchet-dev/typescript-sdk` docs |
 | restate | No skill — use `@restatedev/restate-sdk` docs |
 | windmill | No skill — use `wmill.getVariable()` + `/api/openapi.json` on live instance |
 | trigger-dev | No skill — ensure imports come from `@trigger.dev/sdk/v3` |
