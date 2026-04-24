@@ -37,6 +37,8 @@ Collect inputs as follows:
 
 There is no separate `summary.md` — the executive summary lives in `COMPARISON.md` so there is one source of truth.
 
+5. **Regenerate `index.html`** — the visual, GitHub-Pages-ready companion to `COMPARISON.md`. Same data (synthesized scores table, weighted totals, verdict, process-count / delivery model, per-platform snapshots), styled as a dark editorial page. Whenever you touch `COMPARISON.md` in step 3–4, update `index.html` in the same turn so the two never drift. Keep the existing visual design (Instrument Serif + Inter + JetBrains Mono, warm near-black palette, heatmap cells 1–5). If you add a new platform or drop one, update: the ranked list, the scoring matrix columns, the delivery-model lists, and the per-platform cards. Do not introduce external JS dependencies — keep it a single self-contained HTML file.
+
 ## Anti-bias guardrails
 
 - Do not name a winner before writing the table. Fill the table first, rank after.

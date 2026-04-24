@@ -50,6 +50,7 @@ Example: User says "fetch arXiv paper, post to Slack."
 - Each platform runs directly in the main session (no sub-agents) so the user sees all output live. Between platforms the user does `/clear` to get a fresh context.
 - The user is watching. Report progress concisely between platforms — do not dump full rubrics to chat.
 - Do not modify a platform's code to "improve" it between build and score phases. One shot per platform.
+- **`index.html` mirrors `COMPARISON.md`.** It is the visual, GitHub-Pages-ready view of the same data (scoring table, verdict, delivery model, per-platform snapshots). Whenever you edit `COMPARISON.md` — bench run, rescore, rubric refinement, roster change — update `index.html` in the same turn. Never commit drift between the two.
 - **COMPARISON.md is cumulative, with a curated active roster.** It is the living summary of what we've learnt, but the top table only shows **active contenders** — platforms still in the running for a 40+ dev team. Specifically:
   - The top scoring table shows synthesized best-guess scores for active platforms only. Platforms we've ruled out are moved to the `Dropped from roster` section (one-line rationale, no further updates). Do not re-add a dropped platform without explicit user direction.
   - The "Run log" section appends a new entry per run. Entries for dropped platforms may be removed when dropping them — a one-line summary in `Dropped from roster` is what we keep.
