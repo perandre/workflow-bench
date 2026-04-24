@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Workflow Platform Comparison — Frontkom Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0b0c0d;
+    --bg-elev: #131416;
+    --bg-card: #17191c;
+    --line: #24262a;
+    --line-soft: #1c1e21;
+    --ink: #ecebe6;
+    --ink-dim: #9ea0a3;
+    --ink-faint: #5e6266;
+    --accent: #c9a66b;
+    --accent-soft: #c9a66b33;
+    --s5: #3f7d5a;
+    --s4: #4e8a5a;
+    --s3: #8a7a3a;
+    --s2: #8a5a3a;
+    --s1: #8a3a3a;
+    --sq: #3a3d40;
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 20px;
+  }
+  .eyebrow .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  h1 {
+    font-family: 'Instrument Serif', 'Georgia', serif;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 68px);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+    max-width: 20ch;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .lede {
+    font-size: 19px;
+    color: var(--ink-dim);
+    max-width: 64ch;
+    margin: 0 0 48px;
+    font-weight: 300;
+  }
+  h2 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+    margin: 72px 0 8px;
+  }
+  h2 + .sub {
+    font-size: 14px;
+    color: var(--ink-faint);
+    margin: 0 0 28px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+  /* verdict banner */
+  .verdict {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #17191c 0%, #131416 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 8px;
+  }
+  .verdict-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .verdict-picks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px 40px;
+  }
+  .verdict-pick strong {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--ink);
+    display: block;
+    letter-spacing: -0.01em;
+  }
+  .verdict-pick span {
+    font-size: 13px;
+    color: var(--ink-dim);
+  }
+  .verdict-pick em {
+    color: var(--accent);
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  /* ranking */
+  .rank-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 120px 60px;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    position: relative;
+  }
+  .rank-row:hover { background: #101214; }
+  .rank-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  .rank-name {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .rank-name .n {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  .rank-name .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 2px 6px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+  .rank-name .warn {
+    color: var(--accent);
+    border-color: var(--accent-soft);
+  }
+  .rank-bar {
+    height: 3px;
+    background: var(--line-soft);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .rank-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, #e6c688 100%);
+    border-radius: 2px;
+  }
+  .rank-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--ink);
+  }
+  .rank-score .of {
+    color: var(--ink-faint);
+    font-weight: 400;
+    font-size: 12px;
+  }
+  .rank-unrated { color: var(--ink-faint); }
+  /* matrix */
+  .matrix-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .matrix th, .matrix td {
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--line-soft);
+    border-right: 1px solid var(--line-soft);
+    white-space: nowrap;
+  }
+  .matrix th:last-child, .matrix td:last-child { border-right: none; }
+  .matrix thead th {
+    background: #101214;
+    color: var(--ink-dim);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    position: sticky;
+    top: 0;
+    padding: 14px 12px;
+  }
+  .matrix tbody th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 13px;
+    background: var(--bg-elev);
+    padding-left: 20px;
+  }
+  .matrix tbody th .note {
+    display: block;
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .s5 { background: var(--s5); color: #f0efea; }
+  .s4 { background: var(--s4); color: #f0efea; }
+  .s3 { background: var(--s3); color: #f0efea; }
+  .s2 { background: var(--s2); color: #f0efea; }
+  .s1 { background: var(--s1); color: #f0efea; }
+  .sq { background: var(--sq); color: var(--ink-dim); }
+  .lang { font-weight: 500; color: var(--ink); background: var(--bg-card); font-family: 'JetBrains Mono', monospace; font-size: 12px;}
+  .lang.warn { color: var(--accent); }
+  .total {
+    background: #1a1c1f;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .total .dim { color: var(--ink-faint); font-weight: 400; font-size: 11px; }
+  /* delivery */
+  .delivery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .delivery-card {
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .delivery-card h3 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+  .delivery-card .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .delivery-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+  }
+  .delivery-card li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-dim);
+  }
+  .delivery-card li:last-child { border-bottom: none; }
+  .delivery-card li strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .delivery-card li .pick {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  /* cards */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .platform {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    transition: border-color .15s;
+  }
+  .platform:hover { border-color: var(--accent-soft); }
+  .platform .score {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  .platform .score strong {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .platform h3 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 24px;
+    margin: 0 0 2px;
+    letter-spacing: -0.005em;
+  }
+  .platform .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .platform .meta .warn { color: var(--accent); }
+  .platform p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .platform .kv {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 4px 0;
+    color: var(--ink-dim);
+  }
+  .platform .kv strong { color: var(--ink); font-weight: 500;}
+  .platform .divider {
+    height: 1px;
+    background: var(--line-soft);
+    margin: 14px 0;
+  }
+  /* dropped */
+  .dropped {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .dropped-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  .dropped-item {
+    padding: 12px 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: #0f1012;
+  }
+  .dropped-item strong {
+    color: var(--ink-dim);
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .dropped-item .score {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-faint);
+    font-size: 11px;
+  }
+  /* legend */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    margin-top: 12px;
+  }
+  .legend .swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend .chip {
+    width: 18px; height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  /* footer */
+  footer {
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line-soft);
+    color: var(--ink-faint);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  footer code {
+    background: var(--bg-card);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  /* rule */
+  hr.rule {
+    border: none;
+    height: 1px;
+    background: var(--line-soft);
+    margin: 80px 0;
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 32px 20px; }
+    h2 { font-size: 26px; }
+    .rank-row { grid-template-columns: 24px 1fr 70px; }
+    .rank-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow"><span class="dot"></span>Frontkom workflow bench · updated 2026-04-24</div>
+  <h1>Which durable workflow platform should we <em>bet on?</em></h1>
+  <p class="lede">Ten contenders. One 40+ dev team. Benched head-to-head on the same lead-lifecycle workflow — durable sleep, human-in-the-loop, parallel fan-out, idempotency, the lot.</p>
+
+  <div class="verdict">
+    <div class="verdict-label">Latest verdict — consultancy-delivery lens</div>
+    <div class="verdict-picks">
+      <div class="verdict-pick">
+        <em>Dev-authored engine</em>
+        <strong>Inngest</strong>
+        <span>Cleanest TS authoring experience, external engine, 4 processes per client instance.</span>
+      </div>
+      <div class="verdict-pick">
+        <em>Client-authored engine</em>
+        <strong>Kestra</strong>
+        <span>Lightest external footprint on the roster — JVM + Postgres, no Redis, no worker fleet.</span>
+      </div>
+      <div class="verdict-pick">
+        <em>In-app library</em>
+        <strong>DBOS</strong>
+        <span>When the workflow belongs inside a Postgres-backed app you already own.</span>
+      </div>
+      <div class="verdict-pick">
+        <em>Reliability reference</em>
+        <strong>Temporal</strong>
+        <span>Gold-standard observability and durability. Cluster weight justifies itself only at scale.</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule" />
+
+  <h2>Ranked by weighted score</h2>
+  <p class="sub">DX 30% · Reliability 25% · Ops 15% · Hosting, Licensing &amp; Deployment 20% · Ecosystem 10%</p>
+  <ul class="rank-list">
+    <li class="rank-row"><span class="rank-num">01</span><div class="rank-name"><span class="n">Temporal</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:87%"></div></div><div class="rank-score">87<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">02</span><div class="rank-name"><span class="n">Prefect</span><span class="tag warn">⚠ Python</span></div><div class="rank-bar"><div class="fill" style="width:82.5%"></div></div><div class="rank-score">82.5<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">03</span><div class="rank-name"><span class="n">Inngest</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:82%"></div></div><div class="rank-score">82<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n">Vercel Workflow</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">05</span><div class="rank-name"><span class="n">DBOS</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:78%"></div></div><div class="rank-score">78<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">06</span><div class="rank-name"><span class="n">Restate</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:77%"></div></div><div class="rank-score">77<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">07</span><div class="rank-name"><span class="n">Hatchet</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:70%"></div></div><div class="rank-score">70<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">08</span><div class="rank-name"><span class="n">Kestra</span><span class="tag warn">⚠ YAML</span></div><div class="rank-bar"><div class="fill" style="width:68%"></div></div><div class="rank-score">68<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">08</span><div class="rank-name"><span class="n">Windmill</span><span class="tag warn">⚠ JSON DSL</span></div><div class="rank-bar"><div class="fill" style="width:68%"></div></div><div class="rank-score">68<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">—</span><div class="rank-name"><span class="n">Trigger.dev</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:0"></div></div><div class="rank-score rank-unrated">n/a</div></li>
+  </ul>
+
+  <hr class="rule" />
+
+  <h2>Scoring matrix</h2>
+  <p class="sub">Each cell scored 1–5. Darker = better. Grey = unverified.</p>
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th style="text-align:left; padding-left:20px;">Dimension</th>
+          <th>Temporal</th><th>Prefect</th><th>Inngest</th><th>Vercel WF</th><th>DBOS</th><th>Restate</th><th>Hatchet</th><th>Kestra</th><th>Windmill</th><th>Trigger</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th>Language</th>
+          <td class="lang">TS</td><td class="lang warn">Python ⚠</td><td class="lang">TS</td><td class="lang">TS</td><td class="lang">TS</td><td class="lang">TS</td><td class="lang">TS</td><td class="lang warn">YAML ⚠</td><td class="lang warn">JSON ⚠</td><td class="lang">TS</td>
+        </tr>
+        <tr><th>Developer experience<span class="note">30% weight</span></th>
+          <td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s2">2</td><td class="cell s2">2</td><td class="cell s3">3</td>
+        </tr>
+        <tr><th>Reliability<span class="note">verified</span></th>
+          <td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s5">5</td><td class="cell sq">?</td>
+        </tr>
+        <tr><th>Built for this</th>
+          <td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s3">3</td>
+        </tr>
+        <tr><th>Visibility</th>
+          <td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s5">5</td><td class="cell sq">?</td>
+        </tr>
+        <tr><th>Operational overhead<span class="note">15% weight</span></th>
+          <td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s5">5</td>
+        </tr>
+        <tr><th>Hosting, License &amp; Deployment<span class="note">20% weight · rev 2026-04-24</span></th>
+          <td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s2">2</td>
+        </tr>
+        <tr><th>Ecosystem maturity<span class="note">10% weight</span></th>
+          <td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td>
+        </tr>
+        <tr><th>Multi-tenant flexibility</th>
+          <td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s2">2</td>
+        </tr>
+        <tr class="total"><th>Weighted total</th>
+          <td>87<span class="dim">/100</span></td>
+          <td>82.5<span class="dim">/100</span></td>
+          <td>82<span class="dim">/100</span></td>
+          <td>80<span class="dim">/100</span></td>
+          <td>78<span class="dim">/100</span></td>
+          <td>77<span class="dim">/100</span></td>
+          <td>70<span class="dim">/100</span></td>
+          <td>68<span class="dim">/100</span></td>
+          <td>68<span class="dim">/100</span></td>
+          <td><span class="dim">n/a</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span>Score</span>
+    <span class="swatch"><span class="chip" style="background:var(--s1)"></span>1</span>
+    <span class="swatch"><span class="chip" style="background:var(--s2)"></span>2</span>
+    <span class="swatch"><span class="chip" style="background:var(--s3)"></span>3</span>
+    <span class="swatch"><span class="chip" style="background:var(--s4)"></span>4</span>
+    <span class="swatch"><span class="chip" style="background:var(--s5)"></span>5</span>
+    <span class="swatch"><span class="chip" style="background:var(--sq)"></span>unverified</span>
+  </div>
+
+  <hr class="rule" />
+
+  <h2>Delivery model for a consultancy</h2>
+  <p class="sub">Processes-per-client-instance · standalone engine vs embedded library</p>
+  <div class="delivery-grid">
+    <div class="delivery-card">
+      <div class="role">External engine — lightest to heaviest</div>
+      <h3>Runs next to the client's app</h3>
+      <ul>
+        <li><strong>Kestra</strong><span class="pick">2 processes</span></li>
+        <li><strong>Restate</strong><span>3 processes</span></li>
+        <li><strong>Prefect</strong><span>3 processes</span></li>
+        <li><strong>Windmill</strong><span>3 processes</span></li>
+        <li><strong>Inngest</strong><span>4 processes</span></li>
+        <li><strong>Hatchet</strong><span>4 processes</span></li>
+        <li><strong>Trigger.dev</strong><span>5+ processes</span></li>
+        <li><strong>Temporal</strong><span>5–7 processes</span></li>
+      </ul>
+    </div>
+    <div class="delivery-card">
+      <div class="role">Embedded — lives in the client's codebase</div>
+      <h3>Must be inside the app</h3>
+      <ul>
+        <li><strong>DBOS</strong><span>Library + client's Postgres</span></li>
+        <li><strong>Vercel Workflow</strong><span>Next.js plugin only</span></li>
+      </ul>
+      <div style="margin-top:18px; padding-top:18px; border-top:1px solid var(--line-soft); font-size:13px; color:var(--ink-faint); line-height:1.55;">
+        Library-only platforms cannot be offered as a reusable external service. Strong when the workflow belongs inside one owned app; a blocker for "spin up one engine per client" consultancy models.
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule" />
+
+  <h2>Per-platform snapshot</h2>
+  <p class="sub">Honest one-liners + key numbers</p>
+  <div class="platform-grid">
+
+    <div class="platform">
+      <div class="score"><strong>87</strong>/100</div>
+      <h3>Temporal</h3>
+      <div class="meta">TS · External engine · Apache 2.0</div>
+      <p>Durability reference implementation. Event-sourced history replay, per-activity retry policies, `workflowId` as idempotency key, best observability UI on the roster.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~3.5 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~30s</strong></div>
+      <div class="kv"><span>Ops weight</span><strong>5–7 processes</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>82.5</strong>/100</div>
+      <h3>Prefect</h3>
+      <div class="meta"><span class="warn">⚠ Python-only</span> · External engine · Apache 2.0</div>
+      <p>`@flow` / `@task` decorators read as plain Python. Cleanest HITL primitive after DBOS (`pause_flow_run(wait_for_input=Model)`). Strong self-host story, real production users.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~5 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~37s</strong></div>
+      <div class="kv"><span>Blocker</span><strong>No TS SDK</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>82</strong>/100</div>
+      <h3>Inngest</h3>
+      <div class="meta">TS · External engine · Apache 2.0</div>
+      <p>Best TS DX on the roster. Events → functions, native concurrency/throttle/debounce, `waitForEvent` with timeouts. Verified reliability drops to 3 locally — `--persist` loses timers without external Redis.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~4–11 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~9–37s</strong></div>
+      <div class="kv"><span>Ops weight</span><strong>4 processes</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>80</strong>/100</div>
+      <h3>Vercel Workflow</h3>
+      <div class="meta">TS · Next.js only · Apache 2.0</div>
+      <p>Two directives (`"use workflow"`, `"use step"`) and nothing else. Authoring experience is unmatched. Cost: Next.js-on-Vercel is the happy path, self-host is documented as not-the-happy-path.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~26s</strong></div>
+      <div class="kv"><span>Constraint</span><strong>Lives in Next.js</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>78</strong>/100</div>
+      <h3>DBOS</h3>
+      <div class="meta">TS · In-app library · MIT</div>
+      <p>Library-only — no engine to run, just your Node app + Postgres. Workflow-ID-as-idempotency-key, Postgres-journaled replay, cleanest HITL primitive on the roster. Must live inside the client's app.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~32s</strong></div>
+      <div class="kv"><span>Deploy</span><strong>Inside client app</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>77</strong>/100</div>
+      <h3>Restate</h3>
+      <div class="meta">TS · External engine · BSL 1.1</div>
+      <p>Native workflow-ID idempotency via HTTP 409, SQL journal for step observability, virtual-objects programming model. BSL 1.1 license is the biggest hesitation factor.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~3.5 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~60s</strong></div>
+      <div class="kv"><span>Concern</span><strong>BSL license</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>70</strong>/100</div>
+      <h3>Hatchet</h3>
+      <div class="meta">TS · External engine · MIT</div>
+      <p>Transparent open-source task-queue engine. Strong observability UI. Fewer high-level primitives (no native idempotency, token rotation friction). Engine + Postgres + RabbitMQ + workers.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~6s</strong></div>
+      <div class="kv"><span>Ops weight</span><strong>4 processes</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>68</strong>/100</div>
+      <h3>Kestra</h3>
+      <div class="meta"><span class="warn">⚠ YAML DSL</span> · External engine · Apache 2.0</div>
+      <p>Lightest external engine on the roster — JVM + Postgres, no Redis, no separate workers. Best-in-class observability UI. YAML + Pebble templates are the cost, not everyone's TS-friendly.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~18 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~40s</strong></div>
+      <div class="kv"><span>Ops weight</span><strong>2 processes</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>68</strong>/100</div>
+      <h3>Windmill</h3>
+      <div class="meta"><span class="warn">⚠ JSON DSL</span> · External engine · AGPL/EE</div>
+      <p>Strongest structural runtime fit (ForloopFlow parallel, native cron, first-class secrets). Weakest authoring experience — OpenFlow JSON DSL, no local edit-run-test loop.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~40 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>~70s</strong></div>
+      <div class="kv"><span>Trade-off</span><strong>DSL-only authoring</strong></div>
+    </div>
+
+    <div class="platform">
+      <div class="score"><strong>n/a</strong></div>
+      <h3>Trigger.dev</h3>
+      <div class="meta">TS · Cloud-coupled · Apache 2.0</div>
+      <p>Worker never connected — missing `TRIGGER_SECRET_KEY`, cloud credential required on the default "dev" path. Self-host Docker Compose exists but wasn't exercised. All runtime dimensions unverified.</p>
+      <div class="divider"></div>
+      <div class="kv"><span>Build time</span><strong>~5 min</strong></div>
+      <div class="kv"><span>Exec time</span><strong>—</strong></div>
+      <div class="kv"><span>Status</span><strong>Boot failed</strong></div>
+    </div>
+
+  </div>
+
+  <div class="dropped">
+    <div class="eyebrow"><span class="dot" style="background:var(--ink-faint)"></span>Dropped from roster · wrong category</div>
+    <div class="dropped-list">
+      <div class="dropped-item"><strong>n8n</strong><span class="score">44/100 · visual-first DAG</span></div>
+      <div class="dropped-item"><strong>Dify</strong><span class="score">47/100 · LLM-app builder</span></div>
+      <div class="dropped-item"><strong>Conductor OSS</strong><span class="score">32/100 · JSON DAG, key features paid</span></div>
+      <div class="dropped-item"><strong>XState</strong><span class="score">54/100 · state-machine lib, not engine</span></div>
+      <div class="dropped-item"><strong>Mastra</strong><span class="score">60/100 · AI-agent framework</span></div>
+    </div>
+  </div>
+
+  <footer>
+    <p><strong style="color:var(--ink-dim); font-weight:500;">Methodology.</strong> Each platform ran the same workflow end-to-end on local self-hosted infrastructure only — no vendor cloud. Rubric: DX 30% · Reliability 25% · Operational Load 15% · Hosting, Licensing &amp; Deployment 20% · Ecosystem 10%. Scores are 1–5 per dimension, weighted into a 0–100 total. `⚠` flags a hard authoring constraint (non-TS/Python, DSL-only) — the platform stays visible because one weakness is not a reason to erase good scores on every other axis. Full methodology, per-run notes, and known gotchas live in <code>COMPARISON.md</code>.</p>
+  </footer>
+
+</div>
+</body>
+</html>
