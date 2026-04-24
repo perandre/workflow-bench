@@ -512,31 +512,31 @@
 <div class="wrap">
 
   <div class="eyebrow"><span class="dot"></span>Frontkom workflow bench · updated 2026-04-24</div>
-  <h1>Which durable workflow platform should we <em>bet on?</em></h1>
-  <p class="lede">Ten contenders. One 40+ dev team. Benched head-to-head on the same lead-lifecycle workflow — durable sleep, human-in-the-loop, parallel fan-out, idempotency, the lot.</p>
+  <h1>Durable workflow platforms, <em>compared.</em></h1>
+  <p class="lede">Looking for a code-first, self-hostable workflow platform a 40+ dev team can standardise on — strong TypeScript DX, real durability, and ops that stay sane as we scale.</p>
 
   <div class="verdict">
-    <div class="verdict-label">Latest verdict — consultancy-delivery lens</div>
+    <div class="verdict-label">Latest verdict — Frontkom standardization lens</div>
     <div class="verdict-picks">
       <div class="verdict-pick">
-        <em>Dev-authored engine</em>
+        <em>Default standard</em>
+        <strong><a href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></strong>
+        <span>Best self-host story, best observability, and the least strategic ambiguity for a Frontkom-owned external engine.</span>
+      </div>
+      <div class="verdict-pick">
+        <em>Fastest TS adoption</em>
         <strong><a href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></strong>
-        <span>Cleanest TS authoring experience, external engine, 4 processes per client instance.</span>
+        <span>Great TypeScript ergonomics and external-engine shape, but weaker long-term standardization posture than Temporal.</span>
       </div>
       <div class="verdict-pick">
-        <em>Client-authored engine</em>
-        <strong><a href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></strong>
-        <span>Lightest external footprint on the roster — JVM + Postgres, no Redis, no worker fleet.</span>
-      </div>
-      <div class="verdict-pick">
-        <em>In-app library</em>
+        <em>Embedded exception</em>
         <strong><a href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></strong>
         <span>When the workflow belongs inside a Postgres-backed app you already own.</span>
       </div>
       <div class="verdict-pick">
-        <em>Reliability reference</em>
-        <strong><a href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></strong>
-        <span>Gold-standard observability and durability. Cluster weight justifies itself only at scale.</span>
+        <em>Client-authored exception</em>
+        <strong><a href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></strong>
+        <span>Use when the client wants a UI/YAML automation platform instead of dev-owned code.</span>
       </div>
     </div>
   </div>
@@ -548,7 +548,7 @@
   <ul class="rank-list">
     <li class="rank-row"><span class="rank-num">01</span><div class="rank-name"><span class="n">Temporal</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:87%"></div></div><div class="rank-score">87<span class="of">/100</span></div></li>
     <li class="rank-row"><span class="rank-num">02</span><div class="rank-name"><span class="n">Prefect</span><span class="tag warn">⚠ Python</span></div><div class="rank-bar"><div class="fill" style="width:82.5%"></div></div><div class="rank-score">82.5<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">03</span><div class="rank-name"><span class="n">Inngest</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:82%"></div></div><div class="rank-score">82<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">03</span><div class="rank-name"><span class="n">Inngest</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
     <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n">Vercel Workflow</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
     <li class="rank-row"><span class="rank-num">05</span><div class="rank-name"><span class="n">DBOS</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:78%"></div></div><div class="rank-score">78<span class="of">/100</span></div></li>
     <li class="rank-row"><span class="rank-num">06</span><div class="rank-name"><span class="n">Restate</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:77%"></div></div><div class="rank-score">77<span class="of">/100</span></div></li>
@@ -590,7 +590,7 @@
           <td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s5">5</td>
         </tr>
         <tr><th>Hosting, License &amp; Deployment<span class="note">20% weight · rev 2026-04-24</span></th>
-          <td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s2">2</td>
+          <td class="cell s5">5</td><td class="cell s5">5</td><td class="cell s3">3</td><td class="cell s2">2</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s3">3</td><td class="cell s2">2</td>
         </tr>
         <tr><th>Ecosystem maturity<span class="note">10% weight</span></th>
           <td class="cell s5">5</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s2">2</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s3">3</td><td class="cell s4">4</td><td class="cell s4">4</td><td class="cell s4">4</td>
@@ -601,7 +601,7 @@
         <tr class="total"><th>Weighted total</th>
           <td>87<span class="dim">/100</span></td>
           <td>82.5<span class="dim">/100</span></td>
-          <td>82<span class="dim">/100</span></td>
+          <td>80<span class="dim">/100</span></td>
           <td>80<span class="dim">/100</span></td>
           <td>78<span class="dim">/100</span></td>
           <td>77<span class="dim">/100</span></td>
@@ -684,10 +684,10 @@
     </div>
 
     <div class="platform">
-      <div class="score"><strong>82</strong>/100</div>
+      <div class="score"><strong>80</strong>/100</div>
       <h3><a href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></h3>
-      <div class="meta">TS · External engine · Apache 2.0 <span class="stars" data-repo="inngest/inngest"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">5.3k</span></span></div>
-      <p>Best TS DX on the roster. Events → functions, native concurrency/throttle/debounce, `waitForEvent` with timeouts. Verified reliability drops to 3 locally — `--persist` loses timers without external Redis.</p>
+      <div class="meta">TS · External engine · SSPL/DOSP server <span class="stars" data-repo="inngest/inngest"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">5.3k</span></span></div>
+      <p>Best TS DX on the roster. Events → functions, native concurrency/throttle/debounce, `waitForEvent` with timeouts. Cost: self-host support is not guaranteed directly, and verified restart-safe durability wants external Redis.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~4–11 min</strong></div>
       <div class="kv"><span>Exec time</span><strong>~9–37s</strong></div>
@@ -785,7 +785,7 @@
   </div>
 
   <footer>
-    <p><strong style="color:var(--ink-dim); font-weight:500;">Methodology.</strong> Each platform ran the same workflow end-to-end on local self-hosted infrastructure only — no vendor cloud. Rubric: DX 30% · Reliability 25% · Operational Load 15% · Hosting, Licensing &amp; Deployment 20% · Ecosystem 10%. Scores are 1–5 per dimension, weighted into a 0–100 total. `⚠` flags a hard authoring constraint (non-TS/Python, DSL-only) — the platform stays visible because one weakness is not a reason to erase good scores on every other axis. Full methodology, per-run notes, and known gotchas live in <code>COMPARISON.md</code>.</p>
+    <p><strong style="color:var(--ink-dim); font-weight:500;">Methodology.</strong> Each platform ran the same workflow end-to-end on local self-hosted infrastructure only — no vendor cloud. Rubric: DX 30% · Reliability 25% · Operational Load 15% · Hosting, Licensing &amp; Deployment 20% · Ecosystem 10%. Scores are 1–5 per dimension, weighted into a 0–100 total. Hosting/Deployment includes standalone-engine fit, license terms, and how much operator/support burden Frontkom inherits when self-hosting. `⚠` flags a hard authoring constraint (non-TS/Python, DSL-only) — the platform stays visible because one weakness is not a reason to erase good scores on every other axis. Full methodology, per-run notes, and known gotchas live in <code>COMPARISON.md</code>.</p>
   </footer>
 
 </div>
