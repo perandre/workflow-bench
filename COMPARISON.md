@@ -4,7 +4,7 @@ Cumulative scoring across workflows and runs. The **scoring table at the top** s
 
 Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation included · **F** = Flow only. Full rubrics in `services/{platform}/scoring.md` (gitignored — run the bench locally to generate them).
 
-**Weighted scoring rubric (revised 2026-04-23):** DX 30% · Reliability 25% · Operational Load 15% · Hosting & Licensing 20% · Ecosystem Maturity 10%. The earlier 40/30/20/10 rubric flattered vendor-coupled platforms by not scoring lock-in or adoption maturity as first-class dimensions. Hosting/portability and licensing/lock-in were originally separate (15% + 5%) but measured the same underlying concern — vendor capture — so they're merged into a single 20% dimension covering self-host viability, framework coupling, OSS license terms, and SaaS-requirement. Multi-language support is explicitly not scored — this team stack is TypeScript or Python.
+**Weighted scoring rubric (revised 2026-04-24):** DX 30% · Reliability 25% · Operational Load 15% · Hosting, Licensing & Deployment Model 20% · Ecosystem Maturity 10%. The earlier 40/30/20/10 rubric flattered vendor-coupled platforms by not scoring lock-in or adoption maturity as first-class dimensions. Hosting/portability and licensing/lock-in were originally separate (15% + 5%) but measured the same underlying concern — vendor capture — so they're merged into a single 20% dimension covering self-host viability, framework coupling, OSS license terms, SaaS-requirement, and **whether the platform can run as a standalone engine outside the client's app** (a consultancy-delivery concern: platforms that must live inside the client's codebase cannot be offered as a reusable external service). Multi-language support is explicitly not scored — this team stack is TypeScript or Python.
 
 ---
 
@@ -23,11 +23,11 @@ Scores 1–5 (higher = better). Timing in minutes. Mode: **I** = Installation in
 | **Reliability** | 5 | 5 | 3 (verified) | 4 | 5 | 3 | 5 | 3 | ? | 4 |
 | **Built for this** | 5 | 4 | 5 | 5 | 4 | 4 | 5 | 4 | 3 | 4 |
 | **Visibility** | 5 | 3 | 4 | 4 | 5 | 4 | 5 | 5 | ? | 4 |
-| **Operational overhead** | 3 | 4 | 5 | 5 | 3 | 3 | 2 | 3 | 5 | 4 |
-| **Hosting & licensing** (self-host, OSS license, vendor lock-in) | 5 | 5 | 4 | 2 | 3 | 4 | 3 | 4 | 2 | 5 |
+| **Operational overhead** | 3 | 4 | 5 | 5 | 3 | 3 | 2 | 4 | 5 | 4 |
+| **Hosting, licensing & deployment model** (self-host, OSS license, vendor lock-in, runs as external engine) | 5 | 4 | 4 | 2 | 3 | 4 | 3 | 4 | 2 | 5 |
 | **Ecosystem maturity** | 5 | 3 | 4 | 2 | 3 | 3 | 4 | 4 | 4 | 4 |
 | **Multi-tenant flexibility** | 4 | 3 | 3 | 3 | 3 | 3 | 4 | 3 | 2 | 3 |
-| **Weighted (30/25/15/20/10)** | **~87/100** | **~82/100** | **~82/100** | **80/100** | **~77/100** | **~70/100** | **~68/100** | **~65/100** | — | **82.5/100** |
+| **Weighted (30/25/15/20/10)** | **~87/100** | **~78/100** | **~82/100** | **80/100** | **~77/100** | **~70/100** | **~68/100** | **~68/100** | — | **82.5/100** |
 
 _Score notes are consolidated below the table to keep the scoreboard scannable._
 
@@ -52,12 +52,13 @@ _Score notes are consolidated below the table to keep the scoreboard scannable._
 - **Vercel Workflow Licensing (3)** — runtime is Apache-2.0 and runs on any Node host, but production polish is best-supported on Vercel Fluid Compute. Self-hosting at scale is a documented "not the happy path."
 - **Vercel Workflow rescore (89 → 80)** — under the revised rubric (30/25/15/15/10/5) WDK drops from first place to roughly tied with Inngest. Runtime qualities are unchanged; the new Hosting (2) and Ecosystem (2) dimensions surface what the old rubric hid — WDK is a Next.js durability primitive, not a standalone workflow platform. Still the top pick for a Next.js-on-Vercel shop; no longer an automatic top pick for a platform-agnostic team.
 - **DBOS Reliability (5)** — native workflow-ID idempotency + per-step retry config (`retriesAllowed`, `maxAttempts`, `intervalSeconds`, `backoffRate`) + Postgres-journaled crash replay. Only other platform with workflow-ID-as-idempotency-key is Restate.
-- **DBOS Hosting (5)** — library only (no engine process, no vendor cloud required). Any Node host + any Postgres (RDS, Supabase, Neon, on-prem) is a production deployment; no framework lock-in.
+- **DBOS Hosting (5 → 4, revised 2026-04-24)** — library only (no engine process, no vendor cloud required). Any Node host + any Postgres (RDS, Supabase, Neon, on-prem) is a production deployment; no framework lock-in. **Penalty:** DBOS must live *inside* the client's app and share their Postgres — it has no external-engine mode. For a consultancy that wants one standard "we spin up our workflow engine next to your app" delivery model, DBOS forces code into the client repo. Self-host/licensing still max out (MIT, no vendor); deployment-model is the 1-point drag.
 - **DBOS Visibility (3)** — no bundled local dashboard (Restate and Windmill both ship one). `DBOS.retrieveWorkflow(id).getStatus()` + SQL queries against `dbos_system.workflow_status` / `operation_outputs` / `notifications` are the observability surface. Paid Conductor SaaS provides a hosted UI; self-hosted teams roll their own or query SQL.
 - **DBOS Licensing (5)** — MIT runtime, free self-host forever, no SaaS requirement. Matches Hatchet as cleanest license + lock-in combo on the roster.
 - **DBOS Ecosystem (3)** — credible (Stonebraker/Madden lineage, Series A 2024), but a 40+ dev team adopting DBOS in 2026 is an early adopter. Hiring for "DBOS experience" is a 2027+ bet; TSv3 API (function-based, no decorators) only landed in 2025, so older tutorials actively mislead.
 - **Inngest Reliability (4 → 3, verified)** — manual kill-during-durable-sleep test on 2026-04-23 showed `inngest-cli dev --persist` (SQLite + embedded in-memory Redis) does NOT survive a process restart. SQLite retained run history, but the in-memory Redis lost scheduled wake-ups and `waitForEvent` subscriptions — the paused run stayed `Running` indefinitely and events sent after restart were orphaned. Fresh triggers also hung until the worker restarted too. Full crash-safe self-host requires `--redis-uri` pointing at a persistent Redis. Architecture-claimed reliability is higher; verified reliability under the LOCAL-ONLY bench constraint is 3.
 - **Kestra DX (2)** — four mental models to learn: YAML structure, Pebble templates with non-recursive `vars` evaluation, onResume form-field conventions, and base64-encoded `SECRET_*` env vars (no API in OSS). Declarative fit is worse than Windmill for a TS team because the gotchas compound.
+- **Kestra Operational (3 → 4, revised 2026-04-24)** — lightest external-engine footprint on the roster: one JVM container + Postgres, no Redis, no separate worker fleet (workers run in-process with the server by default). OSS dev is a single `docker compose up` with two services. JVM memory tuning and plugin-scan time at boot are real but modest concerns. For a consultancy running N independent instances per client, 2 processes per client vs Inngest/Hatchet's 4 or Temporal's 5–7 is a material ops saving.
 - **Kestra Reliability (3)** — per-task `retry:` is clean; idempotency is not native (no workflow-ID or business-key dedupe, only concurrency limits). HTTP Request task treats any 2xx response as SUCCESS — a Slack `{"ok":false,"error":"channel_not_found"}` in a 200 response silently passed undetected. Crash-replay architecture via SQL journal is sound but not verified.
 - **Kestra Visibility (5)** — UI timeline, per-task input/output inspection, label-based execution search, logs tab. Ties Restate and Windmill for best-in-class observability on the roster.
 - **Kestra Ecosystem (4)** — 18k+ GitHub stars, 1000+ plugins scanned at boot, ~4 years in production, named enterprise references. Strongest OSS ecosystem on this roster after Airflow.
@@ -76,7 +77,23 @@ _Score notes are consolidated below the table to keep the scoreboard scannable._
 
 **Rewritten every run.** Opinionated take on where the roster stands after the most recent bench — a human-readable companion to the scoring table below. Earlier verdicts are not preserved; the `Run log` section is the archive.
 
-### Latest verdict (2026-04-23, Prefect + Inngest + DBOS × lead-lifecycle, flow-only re-run — all three green, ranking unchanged)
+### Latest verdict (2026-04-24, rubric refinement — consultancy-delivery lens; DBOS 82 → 78, Kestra 65 → 68)
+
+**No new bench runs; two rubric refinements driven by the consultancy-delivery question "can we spin this up as our standard engine next to every client's app?"**
+
+1. **Hosting dimension renamed "Hosting, Licensing & Deployment Model"** to explicitly reward external-engine deployability. Previously rewarded self-hostability + OSS license + vendor lock-in but did not distinguish between platforms that run as a standalone engine next to the client's app (Temporal, Inngest, Hatchet, Restate, Trigger.dev, Kestra, Windmill, Prefect) and platforms that must live *inside* the client's codebase (DBOS as a library, Vercel Workflow as a Next.js plugin). For a 40+ dev consultancy, library-only platforms force code into every client repo — no shared operational story. **Score change:** DBOS Hosting 5 → 4, weighted 82 → 78. Vercel Workflow stays at 2 (Next.js coupling already captured the same concern). No other platforms move on this axis.
+
+2. **Kestra Operational score corrected 3 → 4** after re-examining per-client ops footprint. Kestra OSS is one JVM container + Postgres — no Redis, no separate worker fleet, workers run in-process. That's 2 processes per client instance vs Inngest/Hatchet's 4 or Temporal's 5–7. The lightest external engine on the roster to run-per-client. **Score change:** Kestra weighted 65 → 68, tying Windmill.
+
+**New top of the TS-suitable roster:** Temporal 87 → Inngest 82 → Vercel Workflow 80 → DBOS 78 → Restate 77 → Hatchet 70 → **Kestra 68 = Windmill 68**.
+
+**Consultancy-delivery readings:**
+- **Inngest** is the standalone-engine pick for dev-authored durable workflows — best TS DX, external engine, 4 processes per client.
+- **Kestra** is the standalone-engine pick for client-authored automation — YAML/UI authoring, external engine, 2 processes per client (lightest ops).
+- **DBOS** remains strongest *when the workflow lives inside a Postgres-backed app you own* — still the best library-style option, just no longer a consultancy-standard delivery tool.
+- **Temporal** still wins on reliability + ecosystem, but its cluster weight means "per-client Temporal" is only defensible for the biggest engagements.
+
+### Previous verdict (2026-04-23, Prefect + Inngest + DBOS × lead-lifecycle, flow-only re-run — all three green, ranking unchanged)
 
 **Re-ran the same lead-lifecycle code on Prefect, Inngest, and DBOS back-to-back in flow-only mode, zero human intervention, to re-verify happy-path execution and lock in current wall-clock numbers.** All three completed end-to-end. DBOS **31.9s** (status SUCCESS, wf `lead-lead-bench-1776976008-20260423`) — fastest, unsurprising since it doesn't round-trip through an external orchestrator for the HITL signal (`DBOS.send` writes directly to the notifications table). Inngest **36.9s** (status COMPLETED, run `01KPY08GT8WRMBQGW9YCF65WJV`) — unchanged from the original 2026-04-23 run, daily-bucket CEL idempotency + `match: "data.leadId"` correlation both held. Prefect **37.1s** (state COMPLETED, flow `453fb93b-509d-438a-90fa-00eef042e46c`) — two pause/resume cycles via `python send_decision.py <run_id> <Proposal|signed>`, three-way parallel fan-out clean. **Ranking and merit scores don't move** — DBOS 82, Inngest 82 (verified), Prefect 82.5 (⚠ Python-only) remain a three-way tie at the 82 mark below Temporal (~87). The flow-only timing also settles a small question from the earlier runs: DBOS's ~5s headroom over Inngest/Prefect is a consistent pattern, not an artifact. Take-home: for a Python-friendly 40+ dev team the three-way tie is real; language preference and "do you already run Postgres" are the dominant tiebreakers, not runtime quality.
 
@@ -99,13 +116,13 @@ _Score notes are consolidated below the table to keep the scoreboard scannable._
 **n8n enters the roster well below the active-contender line at ~44/100 and will be moved to `Dropped from roster` below.** The bench exposed n8n as a visual-first automation tool, not a code-first durable workflow platform: the source of truth is a 682-line JSON DAG, `$env` access is gated by an undocumented `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` flag, expressions throw "invalid syntax" on escaped double-quotes inside strings, the Wait-for-webhook resume URL is undocumented-by-example and returned `SQLITE_ERROR: no such column: NaN` for every URL shape we tried, and stale workflow versions were cached after `PUT+activate` until we deactivate→activate again. There is no trigger-level idempotency key — every webhook call creates an execution, and the intra-workflow dedupe we wrote (`$getWorkflowStaticData`) is in-memory-per-worker and unsafe in queue mode. The executions UI *is* genuinely excellent, and the install story is unbeaten (one container, sqlite embedded), but for a 40+ TS dev team that wants PR review, diffs, types, and tests, n8n is the wrong layer.
 
 **Trade-offs for runners-up:**
-- **DBOS (82)** — trade Temporal's world-class UI + ecosystem for a pure library + Postgres-you-already-run; MIT license + no cluster to operate makes this the best value pick when you can live without the Temporal dashboard.
+- **DBOS (78, revised from 82 on 2026-04-24)** — trade Temporal's world-class UI + ecosystem for a pure library + Postgres-you-already-run; MIT license + no cluster to operate makes this the best value pick when you can live without the Temporal dashboard — **but the library-only deployment model means DBOS must live inside the client's app**, which is a real cost for a consultancy that wants one external-engine delivery standard.
 - **Inngest (~82, verified)** — trade DBOS's SQL journal for the cleanest TS authoring experience; verified reliability under local-only constraint dropped to 3 because `dev --persist` loses in-flight timers on restart without external Redis.
 - **Vercel Workflow (80)** — trade portability and ecosystem maturity for the most elegant authoring experience; only compelling if you're a Next.js-on-Vercel shop.
 - **Restate (~77)** — trade DBOS's MIT license for a bundled dashboard and richer built-in step observability; BSL 1.1 is a real hesitation factor.
 - **Hatchet (~70)** — trade DX polish for the most transparent open-source engine; fewer high-level primitives (no native idempotency, token rotation friction).
 - **Windmill (~68)** — trade code-first authoring for best-in-class observability + structural fit; OpenFlow JSON DSL and no local edit-run loop are real drags for TypeScript developers.
-- **Kestra (~65)** — same family as Windmill (YAML DSL + strong UI) but with broader plugin ecosystem; HTTP-2xx-is-SUCCESS makes it risky for API-driven flows without defensive parsing on every call.
+- **Kestra (~68, revised from 65 on 2026-04-24)** — same family as Windmill (YAML DSL + strong UI) but with broader plugin ecosystem and lightest external-engine footprint on the roster (2 processes: JVM + Postgres); HTTP-2xx-is-SUCCESS makes it risky for API-driven flows without defensive parsing on every call. Best pick when a client wants to own/edit automations themselves.
 
 **Surprises:** (1) n8n's `/api/v1/executions` default filter hides `status=running` and `status=waiting` — easy to misread "my workflow never triggered" when it did. (2) n8n's wait-for-webhook resume URL format is not documented anywhere we found and failed with an internal SQL error for every shape we tried; we downgraded the HITL step to `timeInterval` to finish the bench. (3) Temporal's dev-server UI is on a **different port** from the gRPC endpoint (`--ui-port` defaults to :4281) — first-time users sometimes miss it.
 
@@ -239,7 +256,7 @@ B2B lead-lifecycle simulation (ack → 10s sleep → nudge → HITL decision w/3
 - Retries: per-step config matches industry best-practice (`maxAttempts: 5, intervalSeconds: 1, backoffRate: 2`). Injected 30% invoice flake recovered without any user-visible noise.
 - Observability: no bundled local dashboard. Status via `DBOS.retrieveWorkflow(id).getStatus()` returns structured JSON (status/input/output/recoveryAttempts/timestamps). Raw SQL against `dbos_system.*` tables is the advanced path. Paid Conductor SaaS for UI.
 - Gotchas: `tsx` default has no `--watch` (same as Inngest). TSv3 (2025) dropped class decorators — any pre-2025 tutorial is misleading. `DBOS.setConfig()` must precede `DBOS.launch()`.
-- Weighted total: **~82/100** — ties Inngest; slightly edges Vercel Workflow (80) on the revised rubric. Hosting (5) and Licensing (5) are the standouts.
+- Weighted total: **~78/100** (revised 2026-04-24 from 82, after folding "runs as external engine" into the Hosting dimension — DBOS must live inside the client app, dropping Hosting 5 → 4). Still strong on licensing and self-host; the library-only deployment model is the cost.
 
 ### Vercel Workflow × lead-lifecycle (2026-04-23, mode I)
 
