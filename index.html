@@ -356,6 +356,34 @@
     margin: 0 0 2px;
     letter-spacing: -0.005em;
   }
+  .platform h3 a, .dropped-item strong a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .platform h3 a:hover, .dropped-item strong a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent-soft);
+  }
+  .stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .stars svg {
+    width: 11px;
+    height: 11px;
+    fill: var(--ink-faint);
+  }
+  .platform .stars { margin-left: 0; margin-top: 2px; display: inline-flex; }
+  .dropped-item .stars { margin-left: 6px; }
   .platform .meta {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -409,9 +437,10 @@
     font-family: 'Instrument Serif', serif;
     font-size: 16px;
     font-weight: 400;
-    display: block;
+    display: inline;
     margin-bottom: 2px;
   }
+  .dropped-item .score { display: block; margin-top: 2px; }
   .dropped-item .score {
     font-family: 'JetBrains Mono', monospace;
     color: var(--ink-faint);
@@ -624,8 +653,8 @@
 
     <div class="platform">
       <div class="score"><strong>87</strong>/100</div>
-      <h3>Temporal</h3>
-      <div class="meta">TS · External engine · Apache 2.0</div>
+      <h3><a href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></h3>
+      <div class="meta">TS · External engine · Apache 2.0 <span class="stars" data-repo="temporalio/temporal"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">19.8k</span></span></div>
       <p>Durability reference implementation. Event-sourced history replay, per-activity retry policies, `workflowId` as idempotency key, best observability UI on the roster.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~3.5 min</strong></div>
@@ -635,8 +664,8 @@
 
     <div class="platform">
       <div class="score"><strong>82.5</strong>/100</div>
-      <h3>Prefect</h3>
-      <div class="meta"><span class="warn">⚠ Python-only</span> · External engine · Apache 2.0</div>
+      <h3><a href="https://github.com/PrefectHQ/prefect" target="_blank" rel="noopener">Prefect</a></h3>
+      <div class="meta"><span class="warn">⚠ Python-only</span> · External engine · Apache 2.0 <span class="stars" data-repo="PrefectHQ/prefect"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">22.2k</span></span></div>
       <p>`@flow` / `@task` decorators read as plain Python. Cleanest HITL primitive after DBOS (`pause_flow_run(wait_for_input=Model)`). Strong self-host story, real production users.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~5 min</strong></div>
@@ -646,8 +675,8 @@
 
     <div class="platform">
       <div class="score"><strong>82</strong>/100</div>
-      <h3>Inngest</h3>
-      <div class="meta">TS · External engine · Apache 2.0</div>
+      <h3><a href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></h3>
+      <div class="meta">TS · External engine · Apache 2.0 <span class="stars" data-repo="inngest/inngest"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">5.3k</span></span></div>
       <p>Best TS DX on the roster. Events → functions, native concurrency/throttle/debounce, `waitForEvent` with timeouts. Verified reliability drops to 3 locally — `--persist` loses timers without external Redis.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~4–11 min</strong></div>
@@ -657,8 +686,8 @@
 
     <div class="platform">
       <div class="score"><strong>80</strong>/100</div>
-      <h3>Vercel Workflow</h3>
-      <div class="meta">TS · Next.js only · Apache 2.0</div>
+      <h3><a href="https://github.com/vercel/workflow" target="_blank" rel="noopener">Vercel Workflow</a></h3>
+      <div class="meta">TS · Next.js only · Apache 2.0 <span class="stars" data-repo="vercel/workflow"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">1.9k</span></span></div>
       <p>Two directives (`"use workflow"`, `"use step"`) and nothing else. Authoring experience is unmatched. Cost: Next.js-on-Vercel is the happy path, self-host is documented as not-the-happy-path.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
@@ -668,8 +697,8 @@
 
     <div class="platform">
       <div class="score"><strong>78</strong>/100</div>
-      <h3>DBOS</h3>
-      <div class="meta">TS · In-app library · MIT</div>
+      <h3><a href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></h3>
+      <div class="meta">TS · In-app library · MIT <span class="stars" data-repo="dbos-inc/dbos-transact-ts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">1.2k</span></span></div>
       <p>Library-only — no engine to run, just your Node app + Postgres. Workflow-ID-as-idempotency-key, Postgres-journaled replay, cleanest HITL primitive on the roster. Must live inside the client's app.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
@@ -679,8 +708,8 @@
 
     <div class="platform">
       <div class="score"><strong>77</strong>/100</div>
-      <h3>Restate</h3>
-      <div class="meta">TS · External engine · BSL 1.1</div>
+      <h3><a href="https://github.com/restatedev/restate" target="_blank" rel="noopener">Restate</a></h3>
+      <div class="meta">TS · External engine · BSL 1.1 <span class="stars" data-repo="restatedev/restate"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">3.8k</span></span></div>
       <p>Native workflow-ID idempotency via HTTP 409, SQL journal for step observability, virtual-objects programming model. BSL 1.1 license is the biggest hesitation factor.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~3.5 min</strong></div>
@@ -690,8 +719,8 @@
 
     <div class="platform">
       <div class="score"><strong>70</strong>/100</div>
-      <h3>Hatchet</h3>
-      <div class="meta">TS · External engine · MIT</div>
+      <h3><a href="https://github.com/hatchet-dev/hatchet" target="_blank" rel="noopener">Hatchet</a></h3>
+      <div class="meta">TS · External engine · MIT <span class="stars" data-repo="hatchet-dev/hatchet"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">6.9k</span></span></div>
       <p>Transparent open-source task-queue engine. Strong observability UI. Fewer high-level primitives (no native idempotency, token rotation friction). Engine + Postgres + RabbitMQ + workers.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~4 min</strong></div>
@@ -701,8 +730,8 @@
 
     <div class="platform">
       <div class="score"><strong>68</strong>/100</div>
-      <h3>Kestra</h3>
-      <div class="meta"><span class="warn">⚠ YAML DSL</span> · External engine · Apache 2.0</div>
+      <h3><a href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></h3>
+      <div class="meta"><span class="warn">⚠ YAML DSL</span> · External engine · Apache 2.0 <span class="stars" data-repo="kestra-io/kestra"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">26.8k</span></span></div>
       <p>Lightest external engine on the roster — JVM + Postgres, no Redis, no separate workers. Best-in-class observability UI. YAML + Pebble templates are the cost, not everyone's TS-friendly.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~18 min</strong></div>
@@ -712,8 +741,8 @@
 
     <div class="platform">
       <div class="score"><strong>68</strong>/100</div>
-      <h3>Windmill</h3>
-      <div class="meta"><span class="warn">⚠ JSON DSL</span> · External engine · AGPL/EE</div>
+      <h3><a href="https://github.com/windmill-labs/windmill" target="_blank" rel="noopener">Windmill</a></h3>
+      <div class="meta"><span class="warn">⚠ JSON DSL</span> · External engine · AGPL/EE <span class="stars" data-repo="windmill-labs/windmill"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">16.3k</span></span></div>
       <p>Strongest structural runtime fit (ForloopFlow parallel, native cron, first-class secrets). Weakest authoring experience — OpenFlow JSON DSL, no local edit-run-test loop.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~40 min</strong></div>
@@ -723,8 +752,8 @@
 
     <div class="platform">
       <div class="score"><strong>n/a</strong></div>
-      <h3>Trigger.dev</h3>
-      <div class="meta">TS · Cloud-coupled · Apache 2.0</div>
+      <h3><a href="https://github.com/triggerdotdev/trigger.dev" target="_blank" rel="noopener">Trigger.dev</a></h3>
+      <div class="meta">TS · Cloud-coupled · Apache 2.0 <span class="stars" data-repo="triggerdotdev/trigger.dev"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">14.7k</span></span></div>
       <p>Worker never connected — missing `TRIGGER_SECRET_KEY`, cloud credential required on the default "dev" path. Self-host Docker Compose exists but wasn't exercised. All runtime dimensions unverified.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~5 min</strong></div>
@@ -737,11 +766,11 @@
   <div class="dropped">
     <div class="eyebrow"><span class="dot" style="background:var(--ink-faint)"></span>Dropped from roster · wrong category</div>
     <div class="dropped-list">
-      <div class="dropped-item"><strong>n8n</strong><span class="score">44/100 · visual-first DAG</span></div>
-      <div class="dropped-item"><strong>Dify</strong><span class="score">47/100 · LLM-app builder</span></div>
-      <div class="dropped-item"><strong>Conductor OSS</strong><span class="score">32/100 · JSON DAG, key features paid</span></div>
-      <div class="dropped-item"><strong>XState</strong><span class="score">54/100 · state-machine lib, not engine</span></div>
-      <div class="dropped-item"><strong>Mastra</strong><span class="score">60/100 · AI-agent framework</span></div>
+      <div class="dropped-item"><strong><a href="https://github.com/n8n-io/n8n" target="_blank" rel="noopener">n8n</a></strong><span class="stars" data-repo="n8n-io/n8n"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">185k</span></span><span class="score">44/100 · visual-first DAG</span></div>
+      <div class="dropped-item"><strong><a href="https://github.com/langgenius/dify" target="_blank" rel="noopener">Dify</a></strong><span class="stars" data-repo="langgenius/dify"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">139k</span></span><span class="score">47/100 · LLM-app builder</span></div>
+      <div class="dropped-item"><strong><a href="https://github.com/conductor-oss/conductor" target="_blank" rel="noopener">Conductor OSS</a></strong><span class="stars" data-repo="conductor-oss/conductor"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">31.7k</span></span><span class="score">32/100 · JSON DAG, key features paid</span></div>
+      <div class="dropped-item"><strong><a href="https://github.com/statelyai/xstate" target="_blank" rel="noopener">XState</a></strong><span class="stars" data-repo="statelyai/xstate"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">29.5k</span></span><span class="score">54/100 · state-machine lib, not engine</span></div>
+      <div class="dropped-item"><strong><a href="https://github.com/mastra-ai/mastra" target="_blank" rel="noopener">Mastra</a></strong><span class="stars" data-repo="mastra-ai/mastra"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">23.3k</span></span><span class="score">60/100 · AI-agent framework</span></div>
     </div>
   </div>
 
@@ -750,5 +779,25 @@
   </footer>
 
 </div>
+<script>
+  (function () {
+    function fmt(n) {
+      if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k';
+      return String(n);
+    }
+    document.querySelectorAll('.stars[data-repo]').forEach(function (el) {
+      var repo = el.getAttribute('data-repo');
+      fetch('https://api.github.com/repos/' + repo, { headers: { 'Accept': 'application/vnd.github+json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (d && typeof d.stargazers_count === 'number') {
+            var c = el.querySelector('.count');
+            if (c) c.textContent = fmt(d.stargazers_count);
+          }
+        })
+        .catch(function () {});
+    });
+  })();
+</script>
 </body>
 </html>
