@@ -120,6 +120,16 @@
     display: block;
     letter-spacing: -0.01em;
   }
+  .verdict-pick strong a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .verdict-pick strong a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent-soft);
+  }
   .verdict-pick span {
     font-size: 13px;
     color: var(--ink-dim);
@@ -510,22 +520,22 @@
     <div class="verdict-picks">
       <div class="verdict-pick">
         <em>Dev-authored engine</em>
-        <strong>Inngest</strong>
+        <strong><a href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></strong>
         <span>Cleanest TS authoring experience, external engine, 4 processes per client instance.</span>
       </div>
       <div class="verdict-pick">
         <em>Client-authored engine</em>
-        <strong>Kestra</strong>
+        <strong><a href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></strong>
         <span>Lightest external footprint on the roster — JVM + Postgres, no Redis, no worker fleet.</span>
       </div>
       <div class="verdict-pick">
         <em>In-app library</em>
-        <strong>DBOS</strong>
+        <strong><a href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></strong>
         <span>When the workflow belongs inside a Postgres-backed app you already own.</span>
       </div>
       <div class="verdict-pick">
         <em>Reliability reference</em>
-        <strong>Temporal</strong>
+        <strong><a href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></strong>
         <span>Gold-standard observability and durability. Cluster weight justifies itself only at scale.</span>
       </div>
     </div>
