@@ -18,9 +18,9 @@ Send a second trigger with the same logical key (same UTC date). Check whether a
 
 ## 5 — Write scoring.md
 
-**Weighted scoring for 40+ dev team**: DX 30%, Reliability 25%, Operational Load 15%, Hosting & Licensing 20%, Ecosystem Maturity 10%.
+**Weighted scoring for 40+ dev team**: AI Authoring Fit 30%, Reliability 25%, Operational Load 15%, Hosting & Licensing 20%, Ecosystem Maturity 10%.
 
-Rationale: the earlier 40/30/20/10 rubric flattered platforms that delete local infra by offloading production to a vendor. Hosting/portability and licensing/lock-in were originally separate 15%+5% dimensions but they measure the same underlying concern — vendor capture — so they're merged into one 20% dimension covering self-host viability, framework coupling, OSS license, and SaaS-requirement. Multi-language support is explicitly *not* scored — this team stack is TypeScript or Python.
+Rationale: assume workflows are authored primarily by an AI/LLM, then reviewed and operated by humans. High scores therefore require a **text-first source of truth**, a small and regular API surface, errors an agent can self-correct from, and docs/examples that match the installed version. Visual-first tools and stringly-typed DSLs can still work, but they should score poorly if an AI is likely to emit brittle or non-reviewable output. Hosting/portability and licensing/lock-in remain merged into one 20% dimension covering self-host viability, framework coupling, OSS license, and SaaS-requirement. Multi-language support is explicitly *not* scored — this team stack is TypeScript or Python.
 
 Save to `services/[TOOL]/scoring.md`:
 
@@ -36,14 +36,14 @@ Save to `services/[TOOL]/scoring.md`:
 - Execution (sec): [trigger to completion]
 - First-time setup (min): [how long for a new dev to boot, run, understand logs]
 
-## Developer Experience (0-5, 30% weight)
-- Onboarding friction: [score] — [can a new dev understand in <30 min?]
-- Code clarity: [score] — [TypeScript-first? DSL? Readable?]
-- Local dev loop: [score] — [hot reload? Fast iteration?]
-- Error debugging: [score] — [logs clear? Can you fix at 2 AM?]
-- Documentation: [score] — [official docs sufficient? Examples?]
+## AI Authoring Fit (0-5, 30% weight)
+- Source of truth: [score] — [plain code in git, or visual/YAML/JSON DSL? Are diffs reviewable?]
+- API regularity: [score] — [small, consistent surface? Hidden magic? String interpolation?]
+- Agent iteration loop: [score] — [can an agent edit locally, run, inspect, and retry quickly?]
+- Error recoverability: [score] — [are runtime/build errors specific enough for an agent to self-correct?]
+- Documentation for agents: [score] — [version-locked docs, examples, skills, MCP, or other agent-friendly references?]
 
-**DX Summary:** [one sentence on overall friction]
+**AI Authoring Summary:** [one sentence on whether an LLM is likely to produce correct, maintainable flows here]
 
 ## Reliability (0-5, 25% weight)
 - Idempotency: [score] — [deduplication works? Consistent?]
@@ -81,7 +81,7 @@ Combined dimension covering everything that speaks to vendor capture — who own
 **Ecosystem Summary:** [one sentence on whether a 40+ dev team can hire, Google, and trust this in 3 years]
 
 ## Weighted Score (total 0-100)
-- DX: [DX] × 0.30 = [XX]
+- AI Authoring: [AA] × 0.30 = [XX]
 - Reliability: [Rel] × 0.25 = [XX]
 - Operational: [Ops] × 0.15 = [XX]
 - Hosting & Licensing: [HL] × 0.20 = [XX]

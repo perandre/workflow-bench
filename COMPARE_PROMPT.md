@@ -20,7 +20,7 @@ Collect inputs as follows:
 ## Your job
 
 1. Read all rubrics and each platform's `BENCH_LOG.json` (for timing and mode).
-2. **Calculate weighted scores** per the current rubric at the top of `COMPARISON.md` (DX 30% · Reliability 25% · Operational 15% · Hosting 15% · Ecosystem 10% · Cost 5%). Each platform gets a final score out of 100.
+2. **Calculate weighted scores** per the current rubric at the top of `COMPARISON.md` (AI Authoring Fit 30% · Reliability 25% · Operational 15% · Hosting & Licensing 20% · Ecosystem 10%). Each platform gets a final score out of 100.
 3. Update `~/Sites/workflow-bench/COMPARISON.md` — the living comparison table tracked in git, which is also the only synthesis artifact. **Required document order:** (1) title + rubric notes, (2) `## Synthesized scores` table — always at the top so the scoreboard is the first thing a reader sees, (3) `## Executive summary` with Latest verdict + any prior verdicts, (4) `## Run log`, (5) `## Known gotchas`, (6) `## Dropped from roster`, (7) `## Incomplete runs`. For each newly benchmarked platform:
    - Default: add or update the platform's column in the `Synthesized scores` table (fill Language, timing rows, every 1–5 axis, and weighted total). Do not remove or overwrite existing platform columns. A weakness on one axis is not a reason to erase good scores on the others — carry it in-row.
    - **Hard constraint flag** (`⚠` in the Language row): if the platform violates a non-negotiable team constraint (e.g. Python-only for a TS team, YAML-only when the team wants code, cloud-required when we need self-host), keep the column and add `⚠` to the Language cell and the Weighted total cell. This makes the constraint visible without discarding the merit score.
@@ -29,10 +29,10 @@ Collect inputs as follows:
    - Append any new gotchas to the `Known gotchas` table.
    - Phrasing guard: don't conflate merit score and roster decision. Write them separately: "scored X/100 — flagged with `⚠` for <constraint>" or "not in the category — moved to Dropped from roster."
 4. **Rewrite the `Executive summary` → `Latest verdict` section** (replace in place — this section is not append-only). It is the opinionated, human-readable companion to the table. Include:
-   - **Winner paragraph** (for 40+ dev team) — name the winner and why. Focus on: *Can the team be productive? Will this scale? Is it a joy or a drag?*
+   - **Winner paragraph** (for 40+ dev team) — name the winner and why. Focus on: *Can an AI reliably author correct flows here? Can humans review and operate what it produces? Will this scale?*
    - **Trade-offs for runners-up** — one bullet per runner-up explaining what you gain/lose.
    - **Surprises** — anything a platform did noticeably better or worse than expected. Omit the line if there are none; don't manufacture drama.
-   - **Agent-tooling signal** — did richer agent tooling (MCP/skills) produce measurably better code? One paragraph.
+   - **Agent-tooling signal** — did richer agent tooling (MCP/skills/version-locked docs) produce measurably better AI-authored code? One paragraph.
    - Workflow-specific framing where it matters — note what THIS workflow exposed (e.g., "ArXiv-to-Slack is simple enough that DX differences are the real signal").
 
 There is no separate `summary.md` — the executive summary lives in `COMPARISON.md` so there is one source of truth.
