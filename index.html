@@ -115,6 +115,14 @@
     font-family: 'JetBrains Mono', monospace;
     letter-spacing: 0.02em;
   }
+  /* platform-name inline link — used anywhere a service is mentioned */
+  a.pl {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  a.pl:hover { color: var(--accent); border-bottom-color: var(--accent-soft); }
   /* run-it-yourself callout */
   .runit {
     border: 1px solid var(--accent-soft);
@@ -647,16 +655,16 @@
   <h2>Ranked by weighted score</h2>
   <p class="sub">AI Authoring Fit 30% · Reliability 25% · Ops 15% · Hosting, Licensing &amp; Deployment 20% · Ecosystem 10%</p>
   <ul class="rank-list">
-    <li class="rank-row"><span class="rank-num">01</span><div class="rank-name"><span class="n">Temporal</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:87%"></div></div><div class="rank-score">87<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">02</span><div class="rank-name"><span class="n">DBOS</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:84%"></div></div><div class="rank-score">84<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">03</span><div class="rank-name"><span class="n">Prefect</span><span class="tag warn">⚠ Python</span></div><div class="rank-bar"><div class="fill" style="width:82.5%"></div></div><div class="rank-score">82.5<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n">Inngest</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n">Vercel Workflow</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">06</span><div class="rank-name"><span class="n">Trigger.dev</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:77%"></div></div><div class="rank-score">77<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">07</span><div class="rank-name"><span class="n">Restate</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:71%"></div></div><div class="rank-score">71<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">08</span><div class="rank-name"><span class="n">Hatchet</span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:70%"></div></div><div class="rank-score">70<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">09</span><div class="rank-name"><span class="n">Kestra</span><span class="tag warn">⚠ YAML</span></div><div class="rank-bar"><div class="fill" style="width:62%"></div></div><div class="rank-score">62<span class="of">/100</span></div></li>
-    <li class="rank-row"><span class="rank-num">09</span><div class="rank-name"><span class="n">Windmill</span><span class="tag warn">⚠ JSON DSL</span></div><div class="rank-bar"><div class="fill" style="width:62%"></div></div><div class="rank-score">62<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">01</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:87%"></div></div><div class="rank-score">87<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">02</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:84%"></div></div><div class="rank-score">84<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">03</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/PrefectHQ/prefect" target="_blank" rel="noopener">Prefect</a></span><span class="tag warn">⚠ Python</span></div><div class="rank-bar"><div class="fill" style="width:82.5%"></div></div><div class="rank-score">82.5<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">04</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/vercel/workflow" target="_blank" rel="noopener">Vercel Workflow</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:80%"></div></div><div class="rank-score">80<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">06</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/triggerdotdev/trigger.dev" target="_blank" rel="noopener">Trigger.dev</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:77%"></div></div><div class="rank-score">77<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">07</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/restatedev/restate" target="_blank" rel="noopener">Restate</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:71%"></div></div><div class="rank-score">71<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">08</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/hatchet-dev/hatchet" target="_blank" rel="noopener">Hatchet</a></span><span class="tag">TS</span></div><div class="rank-bar"><div class="fill" style="width:70%"></div></div><div class="rank-score">70<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">09</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></span><span class="tag warn">⚠ YAML</span></div><div class="rank-bar"><div class="fill" style="width:62%"></div></div><div class="rank-score">62<span class="of">/100</span></div></li>
+    <li class="rank-row"><span class="rank-num">09</span><div class="rank-name"><span class="n"><a class="pl" href="https://github.com/windmill-labs/windmill" target="_blank" rel="noopener">Windmill</a></span><span class="tag warn">⚠ JSON DSL</span></div><div class="rank-bar"><div class="fill" style="width:62%"></div></div><div class="rank-score">62<span class="of">/100</span></div></li>
   </ul>
 
   <hr class="rule" />
@@ -668,7 +676,7 @@
       <thead>
         <tr>
           <th style="text-align:left; padding-left:20px;">Dimension</th>
-          <th>Temporal</th><th>Prefect</th><th>Inngest</th><th>Vercel WF</th><th>DBOS</th><th>Restate</th><th>Hatchet</th><th>Kestra</th><th>Windmill</th><th>Trigger</th>
+          <th><a class="pl" href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></th><th><a class="pl" href="https://github.com/PrefectHQ/prefect" target="_blank" rel="noopener">Prefect</a></th><th><a class="pl" href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></th><th><a class="pl" href="https://github.com/vercel/workflow" target="_blank" rel="noopener">Vercel WF</a></th><th><a class="pl" href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></th><th><a class="pl" href="https://github.com/restatedev/restate" target="_blank" rel="noopener">Restate</a></th><th><a class="pl" href="https://github.com/hatchet-dev/hatchet" target="_blank" rel="noopener">Hatchet</a></th><th><a class="pl" href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></th><th><a class="pl" href="https://github.com/windmill-labs/windmill" target="_blank" rel="noopener">Windmill</a></th><th><a class="pl" href="https://github.com/triggerdotdev/trigger.dev" target="_blank" rel="noopener">Trigger</a></th>
         </tr>
       </thead>
       <tbody>
@@ -733,22 +741,22 @@
       <div class="role">External engine — lightest to heaviest</div>
       <h3>Runs next to the client's app</h3>
       <ul>
-        <li><strong>Kestra</strong><span class="pick">2 processes</span></li>
-        <li><strong>Restate</strong><span>3 processes</span></li>
-        <li><strong>Prefect</strong><span>3 processes</span></li>
-        <li><strong>Windmill</strong><span>3 processes</span></li>
-        <li><strong>Inngest</strong><span>4 processes</span></li>
-        <li><strong>Hatchet</strong><span>4 processes</span></li>
-        <li><strong>Trigger.dev</strong><span>7 services (webapp + pg + redis + clickhouse + electric + minio + mailpit)</span></li>
-        <li><strong>Temporal</strong><span>5–7 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener">Kestra</a></strong><span class="pick">2 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/restatedev/restate" target="_blank" rel="noopener">Restate</a></strong><span>3 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/PrefectHQ/prefect" target="_blank" rel="noopener">Prefect</a></strong><span>3 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/windmill-labs/windmill" target="_blank" rel="noopener">Windmill</a></strong><span>3 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a></strong><span>4 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/hatchet-dev/hatchet" target="_blank" rel="noopener">Hatchet</a></strong><span>4 processes</span></li>
+        <li><strong><a class="pl" href="https://github.com/triggerdotdev/trigger.dev" target="_blank" rel="noopener">Trigger.dev</a></strong><span>7 services (webapp + pg + redis + clickhouse + electric + minio + mailpit)</span></li>
+        <li><strong><a class="pl" href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a></strong><span>5–7 processes</span></li>
       </ul>
     </div>
     <div class="delivery-card">
       <div class="role">Embedded — lives in the client's codebase</div>
       <h3>Must be inside the app</h3>
       <ul>
-        <li><strong>DBOS</strong><span>Library + client's Postgres</span></li>
-        <li><strong>Vercel Workflow</strong><span>Next.js plugin only</span></li>
+        <li><strong><a class="pl" href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a></strong><span>Library + client's Postgres</span></li>
+        <li><strong><a class="pl" href="https://github.com/vercel/workflow" target="_blank" rel="noopener">Vercel Workflow</a></strong><span>Next.js plugin only</span></li>
       </ul>
       <div style="margin-top:18px; padding-top:18px; border-top:1px solid var(--line-soft); font-size:13px; color:var(--ink-faint); line-height:1.55;">
         Library-only platforms cannot be offered as a reusable external service. Strong when the workflow belongs inside one owned app; a blocker for "spin up one engine per client" consultancy models.
@@ -777,7 +785,7 @@
       <div class="score"><strong>82.5</strong>/100</div>
       <h3><a href="https://github.com/PrefectHQ/prefect" target="_blank" rel="noopener">Prefect</a></h3>
       <div class="meta"><span class="warn">⚠ Python-only</span> · External engine · Apache 2.0 <span class="stars" data-repo="PrefectHQ/prefect"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">22.2k</span></span></div>
-      <p>`@flow` / `@task` decorators read as plain Python. Cleanest HITL primitive after DBOS (`pause_flow_run(wait_for_input=Model)`). Strong self-host story, real production users.</p>
+      <p>`@flow` / `@task` decorators read as plain Python. Cleanest HITL primitive after <a class="pl" href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a> (`pause_flow_run(wait_for_input=Model)`). Strong self-host story, real production users.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~5 min</strong></div>
       <div class="kv"><span>Exec time</span><strong>~37s</strong></div>
@@ -821,7 +829,7 @@
       <div class="score"><strong>71</strong>/100</div>
       <h3><a href="https://github.com/restatedev/restate" target="_blank" rel="noopener">Restate</a></h3>
       <div class="meta">TS · External engine · BSL 1.1 <span class="stars" data-repo="restatedev/restate"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span class="count">3.8k</span></span></div>
-      <p>Still good by normal backend standards, but less AI-natural than DBOS/Inngest/Temporal: the programming model is more specialised, and an LLM needs docs in-context more often. BSL 1.1 remains the biggest non-technical drag.</p>
+      <p>Still good by normal backend standards, but less AI-natural than <a class="pl" href="https://github.com/dbos-inc/dbos-transact-ts" target="_blank" rel="noopener">DBOS</a>/<a class="pl" href="https://github.com/inngest/inngest" target="_blank" rel="noopener">Inngest</a>/<a class="pl" href="https://github.com/temporalio/temporal" target="_blank" rel="noopener">Temporal</a>: the programming model is more specialised, and an LLM needs docs in-context more often. BSL 1.1 remains the biggest non-technical drag.</p>
       <div class="divider"></div>
       <div class="kv"><span>Build time</span><strong>~3.5 min</strong></div>
       <div class="kv"><span>Exec time</span><strong>~60s</strong></div>
